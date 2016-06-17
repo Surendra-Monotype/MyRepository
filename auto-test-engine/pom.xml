@@ -1,0 +1,163 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	
+	<modelVersion>4.0.0</modelVersion>
+	
+	<groupId>org.monotype</groupId>
+	
+	<artifactId>auto_test_engine</artifactId>
+	
+	<version>1.0.0</version>
+	
+	<packaging>jar</packaging>
+	
+	<name>Test Engine</name>
+	
+	<url>http://www.jabong.com</url>
+	
+	<description>Module interacts with other modules and manages the test execution.</description>
+	
+	<parent>
+	    <groupId>org.monotype.com</groupId>
+   		<version>1.0</version>
+   		<artifactId>auto-test-parent</artifactId>
+	</parent>
+	
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.monotype</groupId>
+			<artifactId>auto_test_interpretor</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.monotype</groupId>
+			<artifactId>auto_test_reporter</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.monotype</groupId>
+			<artifactId>auto_test_utils</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.monotype</groupId>
+			<artifactId>auto_test_manager</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.monotype</groupId>
+			<artifactId>auto_test_drivers</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.monotype</groupId>
+			<artifactId>auto_test_logging</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+   		<dependency>
+      	 	<groupId>org.apache.httpcomponents</groupId>
+       		<artifactId>httpclient</artifactId>
+       		<version>4.3.5</version>
+   		</dependency>
+		<dependency>
+ 			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.36</version>
+		</dependency>
+		<dependency>
+    		<groupId>com.github.detro.ghostdriver</groupId>
+    		<artifactId>phantomjsdriver</artifactId>
+    		<version>1.1.0</version>
+    	</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>18.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-server</artifactId>
+			<version>2.42.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.seleniumhq.selenium.client-drivers</groupId>
+			<artifactId>selenium-java-client-driver</artifactId>
+			<version>1.0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-scratchpad</artifactId>
+			<version>3.5-FINAL</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>3.5-FINAL</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>3.5-FINAL</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>openxml4j</artifactId>
+			<version>1.0-beta</version>
+		</dependency>
+		<dependency>
+ 			<groupId>io.appium</groupId>
+			<artifactId>java-client</artifactId>
+ 			<version>2.1.0</version>
+		</dependency>
+		<dependency>
+ 			<groupId>com.google.code.gson</groupId>
+ 			<artifactId>gson</artifactId>
+	 		<version>2.2.4</version>
+		</dependency>
+		<dependency>
+			<groupId>biz.neustar</groupId>
+			<artifactId>browsermob-proxy</artifactId>
+			<version>2.0-beta-6</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.seleniumhq.selenium</groupId>
+					<artifactId>selenium-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+	</dependencies>
+	<build>
+		<directory>${project.basedir}/${targetname}</directory>
+		<resources>
+			<resource>
+				<excludes>
+					<exclude>**/*.properties</exclude>
+					<exclude>**/*.xml</exclude>
+					<exclude>**/*</exclude>
+				</excludes>
+				<directory>${resourcedirectory}</directory>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.18</version>
+				<executions>
+					<execution>
+						<phase>integration-test</phase>
+						<goals>
+							<goal>test</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>
