@@ -1,0 +1,107 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+   
+   <groupId>org.monotype.com</groupId>
+   
+   <version>1.0</version>
+   
+   <artifactId>auto-test-parent</artifactId>
+   
+   <packaging>pom</packaging>
+   
+   <name>AutoTest-Parent</name>
+   
+   <description>Test automation framework for GUI testing.</description>
+   
+   <inceptionYear>2016</inceptionYear>
+   <issueManagement>
+       <system>jira</system>
+       <url></url>
+   </issueManagement>
+   <organization>
+       <name></name>
+       <url></url>
+   </organization>
+   <scm>      
+   </scm>
+   
+   <modules>       
+		<module>auto-test-utils</module>
+        <module>auto-test-interpretor</module>       
+        <module>auto-test-manager</module>
+	    <module>auto-test-drivers</module>
+	    <module>auto-test-logging</module>
+        <module>auto-test-engine</module>
+		<module>auto-test-executor</module>
+		<module>auto-test-reporter</module>	   
+   </modules>
+   
+   <properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<targetname>target</targetname>
+		<basedirectory>${project.basedir}</basedirectory>
+		<resourcedirectory>${project.basedir}/src/main/resources</resourcedirectory>
+	</properties>
+	
+	<dependencies>
+	    <dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.8.3</version>
+		</dependency>
+	</dependencies>
+   
+   <build>
+       <plugins>
+           <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+			<plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>2.4</version>
+                    <configuration>
+                        <descriptorRefs>
+                            <descriptorRef>jar-with-dependencies</descriptorRef>
+                        </descriptorRefs>
+                        <archive>
+                            <manifest>
+                                <mainClass>com.auto.solution.TestExecutor.TestRunner</mainClass>
+                            </manifest>
+                        </archive>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>make-assembly</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>single</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+       </plugins>
+   </build>
+   
+   <developers>
+	    <developer>
+	        <id>ngaur</id>
+	        <name>Nayan Gaur</name>
+	        <organisation>Monotype</organisation>
+	        <organizationUrl>www.monotype.com</organizationUrl>
+	        <roles>
+	            <role>architech</role>
+	            <role>developer</role>
+	            <role>tester</role>
+	        </roles>
+	        <email>nayan.gaur@gmail.com</email>
+	    </developer>
+	</developers>
+</project>
