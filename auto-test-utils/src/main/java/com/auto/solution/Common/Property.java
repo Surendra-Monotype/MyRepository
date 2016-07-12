@@ -62,6 +62,8 @@ public class Property {
 	
 	public static String TEST_MANAGEMENT_KEY = "";
 	
+	public static String TEST_MANAGEMENT_USERNAME = "";
+	
 	public static String CHROME_EXECUTABLE = "chromedriver.exe";
 	
 	public static String CHROME_EXECUTABLE_SH = "chromedriver";
@@ -294,6 +296,7 @@ public class Property {
 		TESTOBJECT_IS_THERE("Test element is present on current page.Its displayed property is -- '{IS_DISPALYED}'"),
 		ER_IN_GETTING_TEST_EXECUTION_BUILD_TEST_MANAGEMENT_TOOL("Error in getting test execution build."),
 		ER_IN_SPECIFYING_RECOVERY_ACTION("No such recovery action ({ACTION_NAME}) supported"),
+		ER_IN_FETCHING_TESTCASE("Test case:'{TESTCASE}' is not present in test suite:{TESTSUITE}"),
 		ER_IN_WRITING_RECOVERY_PROPERTY_FILE("Error in recovery property file.Please review the property names."),
 		ER_IN_LOADING_DRIVER_CAPABILITIES("Error in loading driver capabilities."),
 		NO_TEST_SCENARIOS_In_TEST_GROUP("No test scenario to execute in test group -- '{TEST_GROUP}' ."),

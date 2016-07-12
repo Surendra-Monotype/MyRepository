@@ -35,6 +35,8 @@ public class TestEngineHelper {
 		
 		Property.TEST_MANAGEMENT_KEY = Utility.replaceAllOccurancesOfStringInVariableFormatIntoItsRunTimeValue(Utility.getValueForKeyFromGlobalVarMap("project.testmanagement.key"));
 		
+		Property.TEST_MANAGEMENT_USERNAME = Utility.replaceAllOccurancesOfStringInVariableFormatIntoItsRunTimeValue(Utility.getValueForKeyFromGlobalVarMap("project.testmanagement.username") == null ? "" : Utility.getValueForKeyFromGlobalVarMap("project.testmanagement.username"));
+		
 		Property.BrowserName = Utility.replaceAllOccurancesOfStringInVariableFormatIntoItsRunTimeValue(Utility.getValueForKeyFromGlobalVarMap("drivercapability.browserName"));
 		
 		Property.SyncTimeOut = Utility.replaceAllOccurancesOfStringInVariableFormatIntoItsRunTimeValue(Utility.getValueForKeyFromGlobalVarMap("MaximumTimeout"));
