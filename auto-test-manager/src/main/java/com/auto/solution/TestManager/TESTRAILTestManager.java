@@ -340,16 +340,11 @@ public class TESTRAILTestManager extends TestManagerUtils implements ITestManage
 
 		try {
 			
-			TestPlan testPlan = testProject.getTestPlanByName(Utility.getValueForKeyFromGlobalVarMap("execution.group"));
-
-			TestRun testRun = testPlan.getTestRuns().get(0);
-			String testRunId = testRun.getId().toString();
-
-			JSONArray testRunArray = (JSONArray) JSONValue.parse(testRailAPIsClient.sendGet("get_tests/" + testRunId).toString());
-
+			JSONArray testCasesArray = (JSONArray) JSONValue.parse(testRailAPIsClient.sendGet("get_cases/" + testProjectID).toString());
+			
 			String testCase_id = "-1";
 
-			for (Object testCase : testRunArray) {
+			for (Object testCase : testCasesArray) {
 				JSONObject testCaseObj = (JSONObject) testCase;
 				if (testCaseObj.get("title").equals(testCaseID)) {
 					testCase_id = testCaseObj.get("id").toString();
@@ -364,7 +359,7 @@ public class TESTRAILTestManager extends TestManagerUtils implements ITestManage
 				throw new Exception(err_Message);
 			}
 
-			JSONObject testCaseDetails = (JSONObject) testRailAPIsClient.sendGet("get_test/" + testCase_id);
+			JSONObject testCaseDetails = (JSONObject) testRailAPIsClient.sendGet("get_case/" + testCase_id);
 
 			JSONArray stepInstance = (JSONArray) testCaseDetails.get("custom_steps_separated");
 
