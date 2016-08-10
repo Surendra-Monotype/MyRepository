@@ -381,14 +381,12 @@ public class TestEngine {
 			
 			for (String testCase : listOfTestCasesInTestSuite) {
 				
-				String CurrentTestCaseID = testCase;
-				
-				Property.CURRENT_TESTCASE = CurrentTestCaseID;
+				Property.CURRENT_TESTCASE = testCase;
 				
 				logger.INFO("TestCase : " + testCase + "\n");
 				//loggerForTestExecution.logTestCaseHeader(testCase);
 				
-				logger.INFO("Execution start for " + CurrentTestCaseID);
+				logger.INFO("Execution start for " + testCase);
 				
 				//loggerForTestExecution.logMessageConsole("Execution start for " + CurrentTestCaseID);
 				
@@ -396,13 +394,13 @@ public class TestEngine {
 				
 				StopWatch stopwatch = Utility.getAndStartStopWatch();
 				
-				ExecuteTestCase(CurrentTestCaseID, testScenarioToExecute,null,false);
+				ExecuteTestCase(testCase, testScenarioToExecute,null,false);
 				
 				String timeTakenByTestCaseInSeconds = Utility.haltAndGetTotalTimeRecordedInStopWatch(stopwatch);
 				
-				Property.mapOfTestCasesAndTimeTakenByThem.put(CurrentTestCaseID, timeTakenByTestCaseInSeconds);
+				Property.mapOfTestCasesAndTimeTakenByThem.put(testCase, timeTakenByTestCaseInSeconds);
 				
-				testCasesWithTestStepDetails.put(CurrentTestCaseID, testStepsDetailsForATestCase);
+				testCasesWithTestStepDetails.put(testCase, testStepsDetailsForATestCase);
 				
 				try{
 				objTestSimulator.simulateTestStep("shutdown", "", "", "",false);
@@ -410,7 +408,7 @@ public class TestEngine {
 				catch(Exception e){					
 				}
 				
-				logger.INFO("Execution ends for " + CurrentTestCaseID);
+				logger.INFO("Execution ends for " + testCase);
 				//loggerForTestExecution.logMessageConsole("Execution ends for " + CurrentTestCaseID);
 			}	
 			String timeTakenByTestSute = Utility.haltAndGetTotalTimeRecordedInStopWatch(watchTestSuite);

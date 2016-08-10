@@ -1415,8 +1415,14 @@ public String saveSnapshotAndHighlightTarget(boolean highlight) {
 	}
 
 	@Override
-	public void resizeToDeafult() throws Exception {
+	public void resizeToDefault() throws Exception {
 		throw new Exception(ERROR_MESSAGES.FEATURE_NOT_IMPLEMENTED.getErrorMessage());
+		
+	}
+	
+	@Override
+	public void navigateBack() throws Exception {
+		driver.navigate().back();
 		
 	}
 }

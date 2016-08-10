@@ -16,104 +16,102 @@ import com.auto.solution.Common.Utility;
 public interface ITestManager {
 
 	public void locateRepositories(String testSuiteName);
-	
+
 	public void connectRepositories() throws Exception;
-	
+
 	public String fetchObjectRepositoryContent(String Keyword);
-	
+
 	public String fetchTestDataRepositoryContent(String Keyword);
-	
+
 	public String fetchTestCaseRepositoryContent(String Keyword);
-	
+
 	public HashMap<String, String> getActualObjectDefination(String logicalNameOfTheObject) throws Exception;
-	
-	public List<String>  getTestStepsForTestCase(String testCaseID) throws Exception;
-	
-	//public void reportTestCaseResult(String testCaseName,String status,String remarks,boolean needToReport) throws Exception;
-	
+
+	public List<String> getTestStepsForTestCase(String testCaseID) throws Exception;
+
+	// public void reportTestCaseResult(String testCaseName,String status,String
+	// remarks,boolean needToReport) throws Exception;
+
 	public List<String> getTestGroupsForExecution() throws Exception;
-	
+
 	public HashMap<String, Set<String>> getTestSuiteAndTestCaseHierarchyForExecution() throws Exception;
-	
-	public HashMap<String,HashMap<String, Set<String>>> prepareAndGetCompleteTestHierarchy() throws Exception;
-		
-	
+
+	public HashMap<String, HashMap<String, Set<String>>> prepareAndGetCompleteTestHierarchy() throws Exception;
+
 }
 
 abstract class TestManagerUtils {
-	
+
 	private File[] staticTestDataProperties = null;
-	protected TestManagerUtils(){
-		
+
+	protected TestManagerUtils() {
+
 	}
-	
-	File[] connectToStaticTestDataProperties(String targetLocation) throws Exception{
-		
-		try{
-			
+
+	File[] connectToStaticTestDataProperties(String targetLocation) throws Exception {
+
+		try {
+
 			File file = new File(targetLocation);
-			File[] propertiesFile  = null;
-			if(file.exists()){
-			 propertiesFile = new File(targetLocation).listFiles(new FilenameFilter() {
-				
-				@Override
-				public boolean accept(File dir, String name) {
-					return name.endsWith(".properties");
-				}
-			});
+			File[] propertiesFile = null;
+			if (file.exists()) {
+				propertiesFile = new File(targetLocation).listFiles(new FilenameFilter() {
+
+					@Override
+					public boolean accept(File dir, String name) {
+						return name.endsWith(".properties");
+					}
+				});
 			}
 			return propertiesFile;
-		}
-		catch(Exception e){
+		} catch (Exception e) {
 			throw e;
 		}
 	}
-	
-	void setAllKeysInLocalTestDataToGlobalVarMap(File[] staticTestDataProperties) throws Exception{
-		
-		try{
+
+	void setAllKeysInLocalTestDataToGlobalVarMap(File[] staticTestDataProperties) throws Exception {
+
+		try {
 			for (File propertyFile : staticTestDataProperties) {
-				
+
 				InputStream instream = new FileInputStream(propertyFile);
-				
+
 				Properties prop = new Properties();
-				
+
 				prop.load(instream);
-				
+
 				Enumeration<?> e = prop.propertyNames();
-				
-				while(e.hasMoreElements()){
-					
+
+				while (e.hasMoreElements()) {
+
 					String key = e.nextElement().toString();
-					
+
 					String valueString = prop.getProperty(key);
-					
+
 					String value = valueString;
-					
+
 					int i = 0;
-					
-					if(valueString.contains(",")){
-					
+
+					if (valueString.contains(",")) {
+
 						String[] values = valueString.split(",");
-						
+
 						for (String valuecontent : values) {
-						
+
 							value = valuecontent;
-							
+
 							key = key + "[" + i + "]";
-							
+
 							Utility.setKeyValueToGlobalVarMap(key, value);
 						}
-					}
-					else{
-					
+					} else {
+
 						Utility.setKeyValueToGlobalVarMap(key, value);
 					}
 				}
 			}
-		}
-		catch(Exception e){
-		throw e;
+		} catch (Exception e) {
+			throw e;
 		}
 	}
 }

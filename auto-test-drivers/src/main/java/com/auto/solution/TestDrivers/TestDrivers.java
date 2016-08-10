@@ -89,5 +89,7 @@ public interface TestDrivers {
 	
 	public void resizeCurrentWindow(int x_coord, int y_coord) throws Exception;
 	
-	public void resizeToDeafult() throws Exception;
+	public void resizeToDefault() throws Exception;
+	
+	public void navigateBack() throws Exception;
 }

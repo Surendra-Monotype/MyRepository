@@ -50,7 +50,7 @@ public class TestSimulator {
  			testSimulator = new DesktopWebTestDriverImpl(this.rm);
  	    }
  	    else if(testDriverKey.contains(Property.MOBILE_APP_ANDRIOD_TESTDRIVER_KEYWORD)){
- 	    	testSimulator = new MobileAndriodTestDriverImpl(this.rm);
+ 	    	testSimulator = new MobileAndroidTestDriverImpl(this.rm);
  	    }
  	    else if(testDriverKey.contains(Property.MOBILE_WEB_TESTDRIVER_KEYWORD)){
  	    	testSimulator = new MobileWebTestDriverImpl(this.rm);
@@ -500,8 +500,11 @@ public class TestSimulator {
  				testSimulator.resizeCurrentWindow(x_coordinates, y_coordinates);
  				
  			}
- 			else if(stepAction.toLowerCase().equalsIgnoreCase("resizetodeafult")){
- 				testSimulator.resizeToDeafult();
+ 			else if(stepAction.toLowerCase().equalsIgnoreCase("resizetodefault")){
+ 				testSimulator.resizeToDefault();
+ 			}
+ 			else if(stepAction.toLowerCase().equalsIgnoreCase("navigateback")) {
+ 				testSimulator.navigateBack();
  			}
  			
  			else{

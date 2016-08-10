@@ -1,0 +1,119 @@
+2016-08-10 12:33:53 INFO  TestLogger:89 - Execution logs [Swyft Mobile Apps] at Wed Aug 10 123353 IST 2016: 
+
+2016-08-10 12:33:54 INFO  TestLogger:89 - TestSuite : SmokeTestRun
+
+2016-08-10 12:33:54 INFO  TestLogger:89 - ***********************************************************
+2016-08-10 12:33:54 INFO  TestLogger:89 - TestCase : Verify that Home link displays the Home screen
+
+2016-08-10 12:33:54 INFO  TestLogger:89 - Execution start for Verify that Home link displays the Home screen
+2016-08-10 12:34:27 INFO  TestLogger:89 - ------------------------------------------------------------------------------------
+Test Step Description : User @A initialize; the app 
+Test Step Action : initializeApp 
+Test object :  
+Test Data used -- '' 
+Status : pass 
+Remarks :  
+Execution Time : 2016/08/10 12:33:58 
+------------------------------------------------------------------------------------
+
+2016-08-10 12:34:28 INFO  TestLogger:89 - ------------------------------------------------------------------------------------
+Test Step Description : User @A clicks; on @O btnNext; to navigate to next screen @S optional; 
+Test Step Action : click 
+Test object : btnNext 
+Test Data used -- '' 
+Status : pass 
+Remarks :  
+Execution Time : 2016/08/10 12:34:27 
+------------------------------------------------------------------------------------
+
+2016-08-10 12:34:30 INFO  TestLogger:89 - ------------------------------------------------------------------------------------
+Test Step Description : User @A clicks; on @O btnStart; 
+Test Step Action : click 
+Test object : btnStart 
+Test Data used -- '' 
+Status : pass 
+Remarks :  
+Execution Time : 2016/08/10 12:34:28 
+------------------------------------------------------------------------------------
+
+2016-08-10 12:34:31 INFO  TestLogger:89 - ------------------------------------------------------------------------------------
+Test Step Description : @A isobjectpresent; @O btnAllowAccessOK; @C Is_AllowAccess_Present|Is_AllowAccess_NotPresent; 
+Test Step Action : isObjectThere 
+Test object : btnAllowAccessOK 
+Test Data used -- '' 
+Status : pass 
+Remarks :  
+Execution Time : 2016/08/10 12:34:30 
+------------------------------------------------------------------------------------
+
+2016-08-10 12:34:32 INFO  TestLogger:89 - ------------------------------------------------------------------------------------
+Test Step Description : User @A clicks; on @O btnAllowAccessOK; to allow usage access @C Is_AllowAccess_Present; 
+Test Step Action : click 
+Test object : btnAllowAccessOK 
+Test Data used -- '' 
+Status : pass 
+Remarks :  
+Execution Time : 2016/08/10 12:34:31 
+------------------------------------------------------------------------------------
+
+2016-08-10 12:34:33 INFO  TestLogger:89 - ------------------------------------------------------------------------------------
+Test Step Description : Verify that @O appsAccessList; @A is visible; @C Is_AllowAccess_Present; 
+Test Step Action : isObjectThere 
+Test object : appsAccessList 
+Test Data used -- '' 
+Status : pass 
+Remarks :  
+Execution Time : 2016/08/10 12:34:32 
+------------------------------------------------------------------------------------
+
+2016-08-10 12:34:33 INFO  TestLogger:89 - ------------------------------------------------------------------------------------
+Test Step Description : User @A returns; from Device Settings to the app 
+Test Step Action : navigateback 
+Test object :  
+Test Data used -- '' 
+Status : pass 
+Remarks :  
+Execution Time : 2016/08/10 12:34:33 
+------------------------------------------------------------------------------------
+
+2016-08-10 12:34:35 INFO  TestLogger:89 - ------------------------------------------------------------------------------------
+Test Step Description : Verify that @O btnMenu; @A is visible; 
+Test Step Action : isObjectThere 
+Test object : btnMenu 
+Test Data used -- '' 
+Status : pass 
+Remarks :  
+Execution Time : 2016/08/10 12:34:33 
+------------------------------------------------------------------------------------
+
+2016-08-10 12:34:38 INFO  TestLogger:89 - ------------------------------------------------------------------------------------
+Test Step Description : User @A clicks; on @O btnMenu; and interactive screen goes off 
+Test Step Action : click 
+Test object : btnMenu 
+Test Data used -- '' 
+Status : pass 
+Remarks :  
+Execution Time : 2016/08/10 12:34:35 
+------------------------------------------------------------------------------------
+
+2016-08-10 12:34:38 INFO  TestLogger:89 - ------------------------------------------------------------------------------------
+Test Step Description : User @A clicks; on @O btnMenu; and @O lnkHome; @A is visible; 
+Test Step Action : click 
+Test object : btnMenu 
+Test Data used -- '' 
+Status : pass 
+Remarks :  
+Execution Time : 2016/08/10 12:34:38 
+------------------------------------------------------------------------------------
+
+2016-08-10 12:34:40 INFO  TestLogger:89 - ------------------------------------------------------------------------------------
+Test Step Description : User @A clicks; on @O lnkHome; and @O btnMenu; @A is visible; 
+Test Step Action : click 
+Test object : lnkHome 
+Test Data used -- '' 
+Status : pass 
+Remarks :  
+Execution Time : 2016/08/10 12:34:38 
+------------------------------------------------------------------------------------
+
+2016-08-10 12:34:44 INFO  TestLogger:89 - Execution ends for Verify that Home link displays the Home screen

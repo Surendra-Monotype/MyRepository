@@ -68,7 +68,7 @@ public class Utility {
 		return currentDate.toString().replace(":", "");
 	}
 	
-	public static  String getTenDigitUniqueNumberInString(){
+	public static String getTenDigitUniqueNumberInString(){
 		return String.valueOf(System.currentTimeMillis()).substring(0, 10);
 	}
 	
@@ -90,13 +90,13 @@ public class Utility {
 				}
 			}
 			
-			System.out.println("<-----------------  Test proprties for exectuion  ------------------------>");
+			System.out.println("<-----------------  Test properties for execution  ------------------------>");
 			Set<String> keySet = tempMap.keySet();
 			for(String key : keySet){
 				String value = Property.globalVarMap.get(key);
 				System.out.println(key + " : " + value);
 			}
-			System.out.println("<----------------------- Test proprties ends  ---------------------------->");
+			System.out.println("<----------------------- Test properties ends  ---------------------------->");
 		}
 		catch (Exception e) {
 			
