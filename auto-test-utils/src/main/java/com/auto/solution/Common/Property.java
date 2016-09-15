@@ -10,6 +10,8 @@ public class Property {
 	
 	public static String ObjectRepositoryFileName = "ObjectRepository.xls";
 	
+	public static String ToastScreenshotImageFileName = "screenshotForToast.png";
+	
 	public static String RECOVERY_FILENAME = "recovery.properties";
 	
 	public static String LEARNING_FILENAME = "learnCompiler.properties";

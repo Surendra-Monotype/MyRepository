@@ -25,7 +25,7 @@ public interface ITestManager {
 
 	public String fetchTestCaseRepositoryContent(String Keyword);
 
-	public HashMap<String, String> getActualObjectDefination(String logicalNameOfTheObject) throws Exception;
+	public HashMap<String, String> getActualObjectDefinition(String logicalNameOfTheObject) throws Exception;
 
 	public List<String> getTestStepsForTestCase(String testCaseID) throws Exception;
 

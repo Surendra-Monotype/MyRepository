@@ -288,7 +288,7 @@ public class TESTLINKTestManager extends TestManagerUtils implements ITestManage
 	}
 
 	@Override
-	public HashMap<String, String> getActualObjectDefination(
+	public HashMap<String, String> getActualObjectDefinition(
 			String logicalNameOfTheObject) throws Exception {
 		HashMap<String,String> objDef = new HashMap<String, String>();
 		try{

@@ -1,26 +1,16 @@
 package com.auto.solution.TestManager;
 
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.BufferedReader;
 import java.io.UnsupportedEncodingException;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
-import java.io.File;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,22 +23,22 @@ import java.util.regex.Pattern;
 import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.ITable;
 import org.dbunit.dataset.excel.XlsDataSet;
-
-import br.eti.kinoshita.testlinkjavaapi.util.TestLinkAPIException;
-
-import com.rmn.testrail.entity.TestSuite;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 
 import com.auto.solution.Common.Property;
+import com.auto.solution.Common.Property.ERROR_MESSAGES;
 import com.auto.solution.Common.ResourceManager;
 import com.auto.solution.Common.Utility;
-import com.auto.solution.Common.Property.ERROR_MESSAGES;
 import com.rmn.testrail.entity.Project;
-import com.rmn.testrail.entity.TestCase;
 import com.rmn.testrail.entity.TestInstance;
-import com.rmn.testrail.entity.TestRun;
-import com.rmn.testrail.service.TestRailService;
 import com.rmn.testrail.entity.TestPlan;
-import java.net.URI;
+import com.rmn.testrail.entity.TestRun;
+import com.rmn.testrail.entity.TestSuite;
+import com.rmn.testrail.service.TestRailService;
+
+import br.eti.kinoshita.testlinkjavaapi.util.TestLinkAPIException;
 
 public class TESTRAILTestManager extends TestManagerUtils implements ITestManager {
 
@@ -90,11 +80,13 @@ public class TESTRAILTestManager extends TestManagerUtils implements ITestManage
 				testRailAPIsClient.setUser(Property.TEST_MANAGEMENT_USERNAME);
 				testRailAPIsClient.setPassword(Property.TEST_MANAGEMENT_KEY);
 				try {
-					List<Project> projects = testRailInstance.getProjects();
+					//List<Project> projects = testRailInstance.getProjects();
 					testProject = testRailInstance.getProjectByName(Property.PROJECT_NAME);
 					testProjectID = testProject.getId();
 				} catch (Exception e) {
-					throw new Exception(Property.ERROR_MESSAGES.ER_IN_SPECIFYING_TEST_PROJECT.getErrorMessage());
+					//throw new Exception(Property.ERROR_MESSAGES.ER_IN_SPECIFYING_TEST_PROJECT.getErrorMessage());
+					System.out.println(e.getMessage());
+					System.out.println();
 				}
 				objectRepositorySheetName = Property.ObjectRepositorySheetName;
 				accessLocalTestData(rm.getLocationForExternalFilesInResources().replace("{EXTERNAL_FILE_NAME}", "")
@@ -150,8 +142,8 @@ public class TESTRAILTestManager extends TestManagerUtils implements ITestManage
 
 		HashMap<String, List<String>> testDataCollection = new HashMap<String, List<String>>();
 
-		ArrayList<Integer> testSuiteIds = new ArrayList<Integer>();
-		int i = 0;
+//		ArrayList<Integer> testSuiteIds = new ArrayList<Integer>();
+//		int i = 0;
 
 		try {
 
@@ -228,7 +220,6 @@ public class TESTRAILTestManager extends TestManagerUtils implements ITestManage
 	public void locateRepositories(String testSuiteName) {
 		this.testSuiteName = testSuiteName;
 		objectRepository = rm.getObjectRepositoryFileLocation().replace("{PROJECT_NAME}", Property.PROJECT_NAME);
-
 	}
 
 	@Override
@@ -240,7 +231,6 @@ public class TESTRAILTestManager extends TestManagerUtils implements ITestManage
 		testDataDetailsMap = getTestDataDetailsFromTestLinkToMapCollection(this.testSuiteName);
 
 		objectRepoTable = connectRepository(objectRepository, objectRepositorySheetName);
-
 	}
 
 	@Override
@@ -283,7 +273,7 @@ public class TESTRAILTestManager extends TestManagerUtils implements ITestManage
 	}
 
 	@Override
-	public HashMap<String, String> getActualObjectDefination(String logicalNameOfTheObject) throws Exception {
+	public HashMap<String, String> getActualObjectDefinition(String logicalNameOfTheObject) throws Exception {
 		HashMap<String, String> objDef = new HashMap<String, String>();
 		try {
 			if (objectRepoTable == null) {
@@ -293,7 +283,7 @@ public class TESTRAILTestManager extends TestManagerUtils implements ITestManage
 			int rowCount = objectRepoTable.getRowCount();
 
 			Integer iterativeRow = 0;
-			;
+			
 			if (logicalNameOfTheObject != "") {
 
 				while (iterativeRow < rowCount) {

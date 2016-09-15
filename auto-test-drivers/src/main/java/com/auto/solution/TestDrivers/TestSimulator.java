@@ -178,6 +178,9 @@ public class TestSimulator {
  			else if(stepAction.toLowerCase().equals("click")){
  				testSimulator.click();
  			}
+ 			else if(stepAction.toLowerCase().equals("swipeonelement")) {
+ 				testSimulator.swipeOnElement();
+ 			}
  			else if(stepAction.toLowerCase().equals("shutdown")){
  				testSimulator.shutdown();
  			}
@@ -505,6 +508,8 @@ public class TestSimulator {
  			}
  			else if(stepAction.toLowerCase().equalsIgnoreCase("navigateback")) {
  				testSimulator.navigateBack();
+ 			} else if(stepAction.toLowerCase().equalsIgnoreCase("verifytoastmessage")) {
+ 				testSimulator.verifyToastMessage();
  			}
  			
  			else{

@@ -95,9 +95,9 @@ public class TestEngine {
 				
 				Property.StepStatus = "";
 				
-				testStepCompiler.setStepDefenitionToCompile(currentTestStep);
+				testStepCompiler.setStepDefinitionToCompile(currentTestStep);
 				
-				String testObjectToBeUsedForTestStep = Utility.replaceAllOccurancesOfStringInVariableFormatIntoItsRunTimeValue(testStepCompiler.getObjectDefenition());
+				String testObjectToBeUsedForTestStep = Utility.replaceAllOccurancesOfStringInVariableFormatIntoItsRunTimeValue(testStepCompiler.getObjectDefinition());
 				
 				String testStepAction = Utility.replaceAllOccurancesOfStringInVariableFormatIntoItsRunTimeValue(testStepCompiler.getStepAction());
 				
@@ -109,12 +109,12 @@ public class TestEngine {
 				
 				Boolean executeTestStep = Utility.decideToExecuteTestStepOnTheBasisOfConditionSpecifiedForTestStep(conditionSpecifiedForTestStep, listOfVariableUsedForSpecifyingConditionalTestStep); 
 				
-				String  subTestCaseInvocked = testStepCompiler.getSubTestCaseInvockedInTestStep();				
+				String  subTestCaseInvoked = testStepCompiler.getSubTestCaseInvokedInTestStep();				
 				
 				if(!executeTestStep){
 					continue;
 				}
-				if(subTestCaseInvocked != ""){
+				if(subTestCaseInvoked != ""){
 					
 					String testSuiteForSubTestCase = "";
 					
@@ -125,7 +125,7 @@ public class TestEngine {
 					try{
 					//TODO : Add logic of adding the test scenario of the parent test case if not mentioned.
 						
-						String[] parsedTestCaseDetailsInCurrentTestStep = subTestCaseInvocked.split(":");
+						String[] parsedTestCaseDetailsInCurrentTestStep = subTestCaseInvoked.split(":");
 						
 						testSuiteForSubTestCase = parsedTestCaseDetailsInCurrentTestStep[0].trim();
 						
@@ -166,11 +166,11 @@ public class TestEngine {
 					
 				}
 				
-				HashMap<String, String> objectDefenition = testExecutionManager.getActualObjectDefination(testObjectToBeUsedForTestStep);
+				HashMap<String, String> objectDefinition = testExecutionManager.getActualObjectDefinition(testObjectToBeUsedForTestStep);
 				
 				objTestSimulator.enableTestDriver(Property.EXECUTION_TEST_DRIVER);
 				
-				objTestSimulator.setTestObjectInfo(objectDefenition);
+				objTestSimulator.setTestObjectInfo(objectDefinition);
 				
 				/*
 				 * Prepare Test Data.

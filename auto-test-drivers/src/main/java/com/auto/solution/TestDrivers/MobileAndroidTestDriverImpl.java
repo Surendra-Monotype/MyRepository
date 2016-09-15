@@ -3,8 +3,15 @@ package com.auto.solution.TestDrivers;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.AndroidKeyCode;
 
+import static org.bytedeco.javacpp.lept.pixDestroy;
+import static org.bytedeco.javacpp.lept.pixRead;
+
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -14,7 +21,12 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
+import javax.imageio.ImageIO;
+
 import org.apache.commons.io.FileUtils;
+import org.bytedeco.javacpp.BytePointer;
+import org.bytedeco.javacpp.lept.PIX;
+import org.bytedeco.javacpp.tesseract.TessBaseAPI;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
@@ -24,6 +36,7 @@ import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NoSuchFrameException;
 import org.openqa.selenium.OutputType;
+import org.openqa.selenium.Point;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
@@ -42,150 +55,149 @@ import com.auto.solution.Common.ResourceManager;
 import com.auto.solution.Common.Utility;
 import com.auto.solution.TestDrivers.RecoveryHandling.RecoverySupportForSeleniumDriver;
 
-public class MobileAndroidTestDriverImpl implements TestDrivers{
+public class MobileAndroidTestDriverImpl implements TestDrivers {
 
 	private static RecoverySupportForSeleniumDriver recoverySupportHandle = null;
-	
+
 	private DesiredCapabilities driverCapability = new DesiredCapabilities();
-	
+
 	private boolean isRemoteExecution = false;
-	
+
 	private String appiumUrlForExecution = "";
-	
-	private  static AndroidDriver driver = null;
-	
+
+	private static AndroidDriver driver = null;
+
 	private static WebDriverWait wait = null;
-	
+
 	private WebElement actualTestElement = null;
-	
+
 	private boolean getTestObjectList = false;
-	
+
 	private ArrayList<WebElement> testObjectList = new ArrayList<WebElement>();
-	
+
 	private TestObjectDetails testObjectInfo = null;
-	
+
 	private ResourceManager rManager;
-	
+
 	MobileAndroidTestDriverImpl(ResourceManager rm) {
 		this.rManager = rm;
 	}
-	
-	private Object executeJavaScriptOnBrowserInstance(WebElement testElement,String javaScriptSnippet) throws Exception{
-		
+
+	private Object executeJavaScriptOnBrowserInstance(WebElement testElement, String javaScriptSnippet)
+			throws Exception {
+
 		JavascriptExecutor jsExecutor = null;
 		Object jsResult = null;
-		try{
-			if(driver instanceof JavascriptExecutor){
-			jsExecutor = (JavascriptExecutor)driver;
-			 jsResult = jsExecutor.executeScript(javaScriptSnippet, testElement);
+		try {
+			if (driver instanceof JavascriptExecutor) {
+				jsExecutor = (JavascriptExecutor) driver;
+				jsResult = jsExecutor.executeScript(javaScriptSnippet, testElement);
 			}
-		}
-		catch(Exception e){
+		} catch (Exception e) {
 			throw e;
 		}
 		return jsResult;
 	}
-	
+
 	@Override
 	public void injectTestObjectDetail(TestObjectDetails objDetails) {
 		this.testObjectInfo = objDetails;
-		
+
 	}
 
-	private void loadAndSetDriverCapabilities() throws Exception{
-		try{
-		
+	private void loadAndSetDriverCapabilities() throws Exception {
+		try {
+
 			Set<String> inputKeys = Property.globalVarMap.keySet();
-			
-			//String apkFilePath = rManager.getMobileAPKFileLocation().replace("{PROJECT_NAME}", Property.PROJECT_NAME);
-			
+
+			// String apkFilePath =
+			// rManager.getMobileAPKFileLocation().replace("{PROJECT_NAME}",
+			// Property.PROJECT_NAME);
+
 			for (String capabilitykey : inputKeys) {
-				if(capabilitykey.contains(Property.DRIVER_CAPABILITY_KEYWORD)){
+				if (capabilitykey.contains(Property.DRIVER_CAPABILITY_KEYWORD)) {
 					String capabilityValue = Property.globalVarMap.get(capabilitykey);
-					
+
 					String actualCapabilityName = capabilitykey.replace(Property.DRIVER_CAPABILITY_KEYWORD + ".", "");
-					
-					if(capabilityValue.toLowerCase().contains("null"))
-					{capabilityValue = "";}
-					
-					/*if(actualCapabilityName.equalsIgnoreCase("app")){
-						if(!capabilityValue.trim().equals(""))
-							capabilityValue = Utility.getAbsolutePath(apkFilePath.replace("{APK_FILENAME}", capabilityValue));
-					    }*/
-					
+
+					if (capabilityValue.toLowerCase().contains("null")) {
+						capabilityValue = "";
+					}
+
+					/*
+					 * if(actualCapabilityName.equalsIgnoreCase("app")){
+					 * if(!capabilityValue.trim().equals("")) capabilityValue =
+					 * Utility.getAbsolutePath(apkFilePath.replace(
+					 * "{APK_FILENAME}", capabilityValue)); }
+					 */
+
 					driverCapability.setCapability(actualCapabilityName, capabilityValue);
 				}
 			}
-		}
-		catch(Exception e){
+		} catch (Exception e) {
 			throw new Exception(ERROR_MESSAGES.ER_IN_LOADING_DRIVER_CAPABILITIES.getErrorMessage() + e.getMessage());
 		}
 	}
-	
-	private void captureAndriodExecutionDetails(){
-		if(Property.IsRemoteExecution.equalsIgnoreCase("true")){
+
+	private void captureAndriodExecutionDetails() {
+		if (Property.IsRemoteExecution.equalsIgnoreCase("true")) {
 			this.appiumUrlForExecution = Property.RemoteURL + "/wd/hub";
-		}
-		else{
+		} else {
 			this.appiumUrlForExecution = "http://127.0.0.1:4723/wd/hub";
 		}
 	}
-	
-	private void swipe(String swipeType){
+
+	private void swipe(String swipeType) {
 		int screenWidth = 0;
 		int screenHeight = 0;
 		Dimension screenSize = driver.manage().window().getSize();
-		screenWidth = Integer.valueOf(String.valueOf(screenSize
-				.getWidth())) / 2;
-		screenHeight = Integer.valueOf(String.valueOf(screenSize
-				.getHeight())) / 2;
-		
-		if(swipeType.trim().toLowerCase().contains("up")){
-			driver.swipe(screenWidth, (2*screenHeight)-170, screenWidth, screenHeight, 2000);	
-		}else if(swipeType.trim().toLowerCase().contains("down")){
-			driver.swipe(screenWidth, screenHeight, screenWidth, (2*screenHeight)-100, 2000);	
+		screenWidth = Integer.valueOf(String.valueOf(screenSize.getWidth())) / 2;
+		screenHeight = Integer.valueOf(String.valueOf(screenSize.getHeight())) / 2;
+
+		if (swipeType.trim().toLowerCase().contains("up")) {
+			driver.swipe(screenWidth, (2 * screenHeight) - 170, screenWidth, screenHeight, 2000);
+		} else if (swipeType.trim().toLowerCase().contains("down")) {
+			driver.swipe(screenWidth, screenHeight, screenWidth, (2 * screenHeight) - 100, 2000);
+		} else if (swipeType.trim().toLowerCase().contains("left")) {
+
+			driver.swipe((2 * screenWidth) - 100, screenHeight, 20, screenHeight, 2000);
 		}
-		else if(swipeType.trim().toLowerCase().contains("left")){
-			
-			driver.swipe((2*screenWidth)-100, screenHeight, 20, screenHeight, 2000);
-		}
-	 
+
 	}
-	
+
 	@Override
-	public void swipetoElementVisible(String swipeType) throws Exception{	
+	public void swipetoElementVisible(String swipeType) throws Exception {
 		int currentTime = 0;
-		try {	
-			int timeOut =Integer.parseInt(Property.SyncTimeOut);
-			actualTestElement =  getActualTestObject();
-			while(actualTestElement == null && currentTime < timeOut ){
+		try {
+			int timeOut = Integer.parseInt(Property.SyncTimeOut);
+			actualTestElement = getActualTestObject();
+			while (actualTestElement == null && currentTime < timeOut) {
 				swipe(swipeType);
 				Thread.sleep(1000);
-				actualTestElement =  getActualTestObject();
+				actualTestElement = getActualTestObject();
 				currentTime++;
-			}	
-		}catch(Exception ex){	
-			String errMessage = Property.ERROR_MESSAGES.ERR_IN_SWIPING_TO_OBJECT.getErrorMessage().replaceAll("{TIME}",String.valueOf(currentTime));
+			}
+		} catch (Exception ex) {
+			String errMessage = Property.ERROR_MESSAGES.ERR_IN_SWIPING_TO_OBJECT.getErrorMessage().replaceAll("{TIME}",
+					String.valueOf(currentTime));
 			throw new Exception(errMessage + ex.getMessage());
-			
+
 		}
 	}
-	
-	private String getPageAttribute(String attributeName) throws Exception{
-		
+
+	private String getPageAttribute(String attributeName) throws Exception {
+
 		String attributeValue = "";
 		try {
-			if(attributeName.toLowerCase().contains("url")){
+			if (attributeName.toLowerCase().contains("url")) {
 				attributeValue = driver.getCurrentUrl();
-			}
-			else if(attributeName.toLowerCase().contains("title")){
+			} else if (attributeName.toLowerCase().contains("title")) {
 				attributeValue = driver.getTitle();
-			}
-			else if(attributeName.toLowerCase().contains("source")){
+			} else if (attributeName.toLowerCase().contains("source")) {
 				attributeValue = driver.getPageSource();
-			}
-			else {
-				String errMessage = ERROR_MESSAGES.ER_SPECIFYING_INPUT.getErrorMessage().replace("{INPUT}", attributeName);
+			} else {
+				String errMessage = ERROR_MESSAGES.ER_SPECIFYING_INPUT.getErrorMessage().replace("{INPUT}",
+						attributeName);
 				throw new Exception(errMessage);
 			}
 		} catch (Exception e) {
@@ -193,175 +205,174 @@ public class MobileAndroidTestDriverImpl implements TestDrivers{
 		}
 		return attributeValue;
 	}
-	private void performKeyBoardAction(String Key) throws Exception{
+
+	private void performKeyBoardAction(String Key) throws Exception {
 		int keyValue = -1;
-		try{
+		try {
 			keyValue = Integer.parseInt(Key);
-		}catch(Exception ex){
+		} catch (Exception ex) {
 			throw new Exception(Property.ERROR_MESSAGES.ER_SPECIFYING_KEYBOARD_KEY.getErrorMessage());
 		}
 		try {
 			driver.sendKeyEvent(keyValue);
 		} catch (Exception e) {
-				throw e;
+			throw e;
 		}
 	}
-	private WebElement getTestObject(String locatingStrategy,String location){
+
+	private WebElement getTestObject(String locatingStrategy, String location) {
 		List<WebElement> testElements = null;
 		WebElement testElement = null;
-		try{
-			if(locatingStrategy.toLowerCase().contains("css")){
+		try {
+			if (locatingStrategy.toLowerCase().contains("css")) {
 				testElements = driver.findElements(By.cssSelector(location));
-			}
-			else if(locatingStrategy.toLowerCase().contains("id")){
+			} else if (locatingStrategy.toLowerCase().contains("id")) {
 				testElements = driver.findElements(By.id(location));
-			}
-			else if(locatingStrategy.toLowerCase().contains("tag")){
+			} else if (locatingStrategy.toLowerCase().contains("tag")) {
 				testElements = driver.findElements(By.tagName(location));
-			}
-			else if(locatingStrategy.toLowerCase().contains("class")){
+			} else if (locatingStrategy.toLowerCase().contains("class")) {
 				testElements = driver.findElements(By.className(location));
-				}
-			else if(locatingStrategy.toLowerCase().contains("name")){
+			} else if (locatingStrategy.toLowerCase().contains("name")) {
 				testElements = driver.findElements(By.name(location));
-			}
-			else if(locatingStrategy.toLowerCase().contains("xpath")){
+			} else if (locatingStrategy.toLowerCase().contains("xpath")) {
 				testElements = driver.findElements(By.xpath(location));
-			}
-			else if(locatingStrategy.toLowerCase().contains("text")){
+			} else if (locatingStrategy.toLowerCase().contains("text")) {
 				testElements = driver.findElements(By.linkText(location));
 			}
-			
-			if(this.getTestObjectList){
+
+			if (this.getTestObjectList) {
 				this.testObjectList.clear();
 				this.testObjectList = (ArrayList<WebElement>) testElements;
 			}
 			String[] filtersForTestObject = testObjectInfo.getFiltersAppliedOnTestObject().split(",");
-			
-			
-			for (WebElement testObject : testElements) {				
-			
+
+			for (WebElement testObject : testElements) {
+
 				boolean testObjectValidForFilters = true;
-				
+
 				for (String filter : filtersForTestObject) {
-					if(filter.equals("")){filter = FILTERS.IS_DISPLAYED.getFilter();}
-					
-					if(filter.toLowerCase().contains(FILTERS.IS_ENABLED.getFilter())){
-						if(!testObject.isEnabled()){testObjectValidForFilters = false; break;}
+					if (filter.equals("")) {
+						filter = FILTERS.IS_DISPLAYED.getFilter();
 					}
-					
-					if(filter.toLowerCase().contains(FILTERS.IS_CLICKABLE.getFilter())){
-						if(!isClickable(testObject)){testObjectValidForFilters = false; break;}
+
+					if (filter.toLowerCase().contains(FILTERS.IS_ENABLED.getFilter())) {
+						if (!testObject.isEnabled()) {
+							testObjectValidForFilters = false;
+							break;
+						}
 					}
-				
-					if(filter.toLowerCase().contains(FILTERS.IS_DISPLAYED.getFilter())){
-						if(!testObject.isDisplayed()){testObjectValidForFilters = false; break;}
+
+					if (filter.toLowerCase().contains(FILTERS.IS_CLICKABLE.getFilter())) {
+						if (!isClickable(testObject)) {
+							testObjectValidForFilters = false;
+							break;
+						}
+					}
+
+					if (filter.toLowerCase().contains(FILTERS.IS_DISPLAYED.getFilter())) {
+						if (!testObject.isDisplayed()) {
+							testObjectValidForFilters = false;
+							break;
+						}
 					}
 				}
-				
-				if(testObjectValidForFilters){
+
+				if (testObjectValidForFilters) {
 					testElement = testObject;
 					break;
 				}
 			}
-			
-		}
-		catch(Exception e){
+
+		} catch (Exception e) {
 			return null;
 		}
 		return testElement;
 	}
-	
-	
-	public static boolean isClickable(WebElement testObject){
-		
-		try
-		{
-		   WebDriverWait wait = new WebDriverWait(driver,1);
-		   wait.until(ExpectedConditions.elementToBeClickable(testObject));
-		   return true;
-		}
-		catch (Exception e)
-		{
-		  return false;
+
+	public static boolean isClickable(WebElement testObject) {
+
+		try {
+			WebDriverWait wait = new WebDriverWait(driver, 1);
+			wait.until(ExpectedConditions.elementToBeClickable(testObject));
+			return true;
+		} catch (Exception e) {
+			return false;
 		}
 	}
-	
-    private WebElement waitAndGetTestObject(Boolean isWaitRequiredToFetchTheTestObject) throws NoSuchElementException, Exception{
-	try{
-		if(Property.LIST_STRATEGY_KEYWORD.contains(Property.STRATEGY_KEYWORD.NOWAIT.toString())){
-			isWaitRequiredToFetchTheTestObject = false;
-		}	
-		
-		String locatingStrategyForObject = testObjectInfo.getLocatingStrategyOfTestObject();
-		
-		String locationOfObject = testObjectInfo.getLocationOfTestObject();
-		
-		if(((locatingStrategyForObject=="")||locatingStrategyForObject==null)&&((locationOfObject=="")||locationOfObject==null))
-		{
-			throw new Exception(Property.ERROR_MESSAGES.ER_GETTING_TESTOBJECT.getErrorMessage());
-		}
-		
-		if(isWaitRequiredToFetchTheTestObject){
-					wait.until(new ExpectedCondition<WebElement>() {
-							public WebElement apply(WebDriver d) {
-								try {
-										actualTestElement =  getActualTestObject();
-										return actualTestElement;
-									} catch (Exception e) {
-									actualTestElement = null;
-									return null;
-									}
-							}
-					});
-					try{
-					recoverySupportHandle.doRecoveryForSpecialObjectsWithHigherPriority();
+
+	private WebElement waitAndGetTestObject(Boolean isWaitRequiredToFetchTheTestObject)
+			throws NoSuchElementException, Exception {
+		try {
+			if (Property.LIST_STRATEGY_KEYWORD.contains(Property.STRATEGY_KEYWORD.NOWAIT.toString())) {
+				isWaitRequiredToFetchTheTestObject = false;
+			}
+
+			String locatingStrategyForObject = testObjectInfo.getLocatingStrategyOfTestObject();
+
+			String locationOfObject = testObjectInfo.getLocationOfTestObject();
+
+			if (((locatingStrategyForObject == "") || locatingStrategyForObject == null)
+					&& ((locationOfObject == "") || locationOfObject == null)) {
+				throw new Exception(Property.ERROR_MESSAGES.ER_GETTING_TESTOBJECT.getErrorMessage());
+			}
+
+			if (isWaitRequiredToFetchTheTestObject) {
+				wait.until(new ExpectedCondition<WebElement>() {
+					public WebElement apply(WebDriver d) {
+						try {
+							actualTestElement = getActualTestObject();
+							return actualTestElement;
+						} catch (Exception e) {
+							actualTestElement = null;
+							return null;
+						}
 					}
-					catch(Exception e){  System.out.println("RECOVERY_ACTION - " + e.getMessage());}
-					waitAndGetTestObject(false);
-			}
-			else{
-				actualTestElement = getActualTestObject();
-			}
-		}
-		catch(TimeoutException te){
+				});
 				try {
-					recoverySupportHandle.doRecovery();
+					recoverySupportHandle.doRecoveryForSpecialObjectsWithHigherPriority();
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					throw new Exception(Property.ERROR_MESSAGES.ER_IN_SPECIFYING_RECOVERY_ACTION.getErrorMessage());
+					System.out.println("RECOVERY_ACTION - " + e.getMessage());
 				}
 				waitAndGetTestObject(false);
-		 if(actualTestElement==null)
-			throw new NoSuchElementException(Property.ERROR_MESSAGES.ER_GET_TESTOBJECT.getErrorMessage());
+			} else {
+				actualTestElement = getActualTestObject();
+			}
+		} catch (TimeoutException te) {
+			try {
+				recoverySupportHandle.doRecovery();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				throw new Exception(Property.ERROR_MESSAGES.ER_IN_SPECIFYING_RECOVERY_ACTION.getErrorMessage());
+			}
+			waitAndGetTestObject(false);
+			if (actualTestElement == null)
+				throw new NoSuchElementException(Property.ERROR_MESSAGES.ER_GET_TESTOBJECT.getErrorMessage());
 		}
-	
+
 		return actualTestElement;
 	}
-	
-	private WebElement getActualTestObject(){
-		WebElement testElement = null;		
+
+	private WebElement getActualTestObject() {
+		WebElement testElement = null;
 		String locatingStrategyForObject = testObjectInfo.getLocatingStrategyOfTestObject();
-		
+
 		String locationOfObject = testObjectInfo.getLocationOfTestObject();
-		
+
 		testElement = this.getTestObject(locatingStrategyForObject, locationOfObject);
-			
-		return testElement;					
+
+		return testElement;
 	}
-	
+
 	@Override
-	public void initializeApp(String endpoint) throws MalformedURLException,
-			Exception {
-		try{	
+	public void initializeApp(String endpoint) throws MalformedURLException, Exception {
+		try {
 			this.loadAndSetDriverCapabilities();
 			this.captureAndriodExecutionDetails();
 			driver = new AndroidDriver(new URL(this.appiumUrlForExecution), driverCapability);
 			wait = new WebDriverWait(driver, Long.parseLong(Property.SyncTimeOut));
-			recoverySupportHandle = new RecoverySupportForSeleniumDriver(driver,rManager);
+			recoverySupportHandle = new RecoverySupportForSeleniumDriver(driver, rManager);
 			Utility.addObjectToGlobalObjectCollection(Property.TEST_DRIVER_KEY, driver);
-		}
-		catch(Exception e){
+		} catch (Exception e) {
 			throw e;
 		}
 	}
@@ -369,232 +380,233 @@ public class MobileAndroidTestDriverImpl implements TestDrivers{
 	@Override
 	public void hitTwice() throws Exception {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void pressKeyboardKey(String Key) throws Exception {
-		try{
+		try {
 			this.performKeyBoardAction(Key);
-		}
-		catch(Exception e){
+		} catch (Exception e) {
 			throw e;
 		}
-		
+
 	}
 
 	@Override
 	public void check() throws NoSuchElementException, Exception {
-		WebElement testElement= null;
-		try{
+		WebElement testElement = null;
+		try {
 			testElement = this.waitAndGetTestObject(true);
-		}
-		catch(NoSuchElementException ne){
+		} catch (NoSuchElementException ne) {
 			throw ne;
 		}
-		try{
-			
-			if(!Boolean.parseBoolean(testElement.getAttribute("checked"))){
+		try {
+
+			if (!Boolean.parseBoolean(testElement.getAttribute("checked"))) {
 				testElement.click();
 			}
-		}
-		catch(Exception e){
+		} catch (Exception e) {
 			throw e;
 		}
-		
+
 	}
 
 	@Override
 	public void uncheck() throws NoSuchElementException, Exception {
 		WebElement testElement = null;
-		try{
+		try {
 			testElement = this.waitAndGetTestObject(true);
-		}
-		catch(NoSuchElementException ne){
+		} catch (NoSuchElementException ne) {
 			throw ne;
 		}
-		
-		try{
-			if(Boolean.parseBoolean(testElement.getAttribute("checked"))){
+
+		try {
+			if (Boolean.parseBoolean(testElement.getAttribute("checked"))) {
 				testElement.click();
 			}
-		}
-		catch(Exception e){
+		} catch (Exception e) {
 			throw e;
 		}
-		
+
 	}
 
 	@Override
 	public void sendKey(String text) throws NoSuchElementException, Exception {
 		WebElement testElement = null;
-		try{
-			testElement = this.waitAndGetTestObject(true);				
-		}
-		catch(NoSuchElementException ne){
+		try {
+			testElement = this.waitAndGetTestObject(true);
+		} catch (NoSuchElementException ne) {
 			throw ne;
 		}
-		try{
+		try {
 			try {
-			testElement.click();
-			testElement.clear();
-			}catch(Exception ex){
-				
+				testElement.click();
+				testElement.clear();
+			} catch (Exception ex) {
+
 			}
-			testElement.sendKeys(text);	
+			testElement.sendKeys(text);
 			try {
 				driver.hideKeyboard();
 			} catch (Exception e) {
-				
+
 			}
-		}
-		catch(Exception e){
+		} catch (Exception e) {
 			throw e;
-		}		
+		}
 	}
 
 	@Override
 	public void navigateURL(String URL) throws Exception {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void isResourceLoaded() throws Exception {
 		String currentUrl = "";
 		String expectedUrl = testObjectInfo.getLocationOfTestObject();
-		if(expectedUrl == ""){
+		if (expectedUrl == "") {
 			throw new Exception(Property.ERROR_MESSAGES.ER_SPECIFYING_OBJECT.getErrorMessage());
 		}
-		try{
+		try {
 			currentUrl = driver.getCurrentUrl();
-			if(!(currentUrl.contains(expectedUrl))){
+			if (!(currentUrl.contains(expectedUrl))) {
 				throw new AssertionError(Property.ERROR_MESSAGES.ER_ASSERTION.getErrorMessage());
 			}
-		}
-		catch(Exception e){
+		} catch (Exception e) {
 			throw e;
 		}
-		
+
 	}
 
 	@Override
 	public void isTextPresent(String text) throws Exception {
-WebElement testElement = null;
-		
-		try{
+		WebElement testElement = null;
+
+		try {
 			testElement = this.waitAndGetTestObject(true);
-		}
-		catch(NoSuchElementException ne){
+		} catch (NoSuchElementException ne) {
 			testElement = null;
 		}
-		
+
 		String ObjectText = "";
-		try{
-		if(testElement == null){
-			ObjectText = driver.getPageSource();
+		try {
+			if (testElement == null) {
+				ObjectText = driver.getPageSource();
+			} else {
+				ObjectText = testElement.getText();
 			}
-		else{
-			ObjectText = testElement.getText();
-			}
-			if(!Utility.matchContentsBasedOnStrategyDefinedForTestStep(text, ObjectText)){
-				String msgException = Property.ERROR_MESSAGES.ER_ASSERTION.getErrorMessage().replace("{ACTUAL_DATA}",ObjectText);
+			if (!Utility.matchContentsBasedOnStrategyDefinedForTestStep(text, ObjectText)) {
+				String msgException = Property.ERROR_MESSAGES.ER_ASSERTION.getErrorMessage().replace("{ACTUAL_DATA}",
+						ObjectText);
 				msgException = msgException.replace("{$TESTDATA}", text);
 				throw new Exception(msgException);
-			}		
-		}
-		catch(Exception e){
+			}
+		} catch (Exception e) {
 			throw e;
 		}
-		
+
 	}
 
 	@Override
 	public void click() throws Exception {
 		WebElement testElement = null;
-		try{
+		try {
 			testElement = this.waitAndGetTestObject(true);
 			testElement.click();
-		}
-		catch(NoSuchElementException ne){
+		} catch (NoSuchElementException ne) {
 			throw ne;
-		}
-		catch(Exception e){
+		} catch (Exception e) {
 			throw e;
-		}		
+		}
+	}
+
+	@Override
+	public void swipeOnElement() throws Exception {
+		WebElement testElement = null;
+		try {
+			testElement = this.waitAndGetTestObject(true);
+			Point point = testElement.getLocation();
+			int x = point.getX();
+			int y = point.getY();
+			driver.swipe(x, y, x + 100, y + 100, 0);
+		} catch (NoSuchElementException ne) {
+			throw ne;
+		} catch (Exception e) {
+			throw e;
+		}
 	}
 
 	@Override
 	public void shutdown() throws Exception {
-		try{
-			try{
+		try {
+			try {
 				driver.quit();
+			} catch (Exception te) {
+				// Nothing to do.
 			}
-			catch(Exception te){
-				//Nothing to do.
-			}
-		}
-		catch(Exception e){
+		} catch (Exception e) {
 			throw e;
 		}
-		
+
 	}
 
 	@Override
 	public void closeAllBrowsersWindow() throws Exception {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void isObjectThere() throws Exception {
 		WebElement testElement = this.waitAndGetTestObject(true);
-		try{
-		if(testElement == null){
-			throw new Exception(Property.ERROR_MESSAGES.ER_ELEMENT_NOT_PRESENT.getErrorMessage());
-		}
-		if(!testElement.isDisplayed()){
-			throw new Exception(Property.ERROR_MESSAGES.ER_ELEMENT_NOT_DISPLAYED.getErrorMessage());
-		}
-		
-		}
-		catch(Exception e){
+		try {
+			if (testElement == null) {
+				throw new Exception(Property.ERROR_MESSAGES.ER_ELEMENT_NOT_PRESENT.getErrorMessage());
+			}
+			if (!testElement.isDisplayed()) {
+				throw new Exception(Property.ERROR_MESSAGES.ER_ELEMENT_NOT_DISPLAYED.getErrorMessage());
+			}
+
+		} catch (Exception e) {
 			throw e;
 		}
-		
+
 	}
 
 	@Override
 	public void isObjectNotThere() throws Exception {
-		WebElement testElement = this.waitAndGetTestObject(false);	
+		WebElement testElement = this.waitAndGetTestObject(false);
 		try {
-			if(testElement != null){
-				String errMessage = Property.ERROR_MESSAGES.TESTOBJECT_IS_THERE.getErrorMessage().replace("{IS_DISPALYED}", String.valueOf(testElement.isDisplayed()));
+			if (testElement != null) {
+				String errMessage = Property.ERROR_MESSAGES.TESTOBJECT_IS_THERE.getErrorMessage()
+						.replace("{IS_DISPALYED}", String.valueOf(testElement.isDisplayed()));
 				throw new Exception(errMessage);
 			}
 		} catch (Exception e) {
 			throw e;
 		}
-		
+
 	}
 
 	@Override
 	public String fireEvents(String eventCodeSnippet) throws Exception {
 		String codeSnippetOutput = "";
-		try{
+		try {
 			WebElement testElement = null;
-			try{
+			try {
 				testElement = this.waitAndGetTestObject(true);
+			} catch (Exception e) {
+				// nothing to do here!
 			}
-			catch(Exception e){
-			 //nothing to do here!
-			}
-			
+
 			Object snippetResult = this.executeJavaScriptOnBrowserInstance(testElement, eventCodeSnippet);
-			if(snippetResult != null){
-			codeSnippetOutput = snippetResult.toString();}
-		}
-		catch(Exception e){
+			if (snippetResult != null) {
+				codeSnippetOutput = snippetResult.toString();
+			}
+		} catch (Exception e) {
 			throw e;
 		}
 		return codeSnippetOutput;
@@ -604,191 +616,192 @@ WebElement testElement = null;
 	public String select(String itemToSelect) throws Exception {
 		WebElement testElement = this.waitAndGetTestObject(true);
 		String selectedOption;
-		try{
-			if(testElement == null){
+		try {
+			if (testElement == null) {
 				throw new Exception(ERROR_MESSAGES.ER_GET_TESTOBJECT.getErrorMessage());
 			}
 			Select objSelect = new Select(testElement);
-			//select particular option.
+			// select particular option.
 			objSelect.selectByVisibleText(itemToSelect);
-			//verify if selected
+			// verify if selected
 			WebElement optionSelected = objSelect.getFirstSelectedOption();
-			if(!optionSelected.getText().equals(itemToSelect)){
-				throw new Exception(ERROR_MESSAGES.ER_COULDNOT_SELECT_VALUE.getErrorMessage().replace("{$OPTION}", itemToSelect));
+			if (!optionSelected.getText().equals(itemToSelect)) {
+				throw new Exception(
+						ERROR_MESSAGES.ER_COULDNOT_SELECT_VALUE.getErrorMessage().replace("{$OPTION}", itemToSelect));
 			}
 			selectedOption = optionSelected.getText().toString().trim();
 			return selectedOption;
-		}
-		catch(Exception e){
+		} catch (Exception e) {
 			throw e;
 		}
-		
+
 	}
 
 	@Override
-	public String getTestElementAttribute(String propertyToFetch)
-			throws Exception {
-		try{
+	public String getTestElementAttribute(String propertyToFetch) throws Exception {
+		try {
 			WebElement testElement = this.waitAndGetTestObject(true);
-			
+
 			String attributeValue = "";
-			
-			if(propertyToFetch.equalsIgnoreCase("tag") || propertyToFetch.equalsIgnoreCase("tagname")){
+
+			if (propertyToFetch.equalsIgnoreCase("tag") || propertyToFetch.equalsIgnoreCase("tagname")) {
 				attributeValue = testElement.getTagName();
-			}
-			else if(propertyToFetch.equalsIgnoreCase("text")){
+			} else if (propertyToFetch.equalsIgnoreCase("text")) {
 				attributeValue = testElement.getText();
-			}
-			else if(propertyToFetch.toLowerCase().contains("css")){
+			} else if (propertyToFetch.toLowerCase().contains("css")) {
 				String[] inputContent = propertyToFetch.split(":");
-				if(inputContent.length != 2){
+				if (inputContent.length != 2) {
 					throw new Exception(ERROR_MESSAGES.ER_SPECIFYING_CSS_PROPERTY.getErrorMessage());
 				}
 				attributeValue = testElement.getCssValue(inputContent[1]);
-			}
-			else{
+			} else {
 				attributeValue = testElement.getAttribute(propertyToFetch);
 			}
-			
+
 			return attributeValue;
-			}
-			catch(NullPointerException ne){
-				throw new Exception(ERROR_MESSAGES.ER_GET_TESTOBJECT.getErrorMessage());
-			}
-			catch(Exception e){
-				throw e;
-			}
-	}
-	
-	@Override
-	public void verifyTestElementAttributeNotPresent(String propertyToVerify,String expectedValueOfProperty) throws Exception {
-		String actualTestElementProperty = this.getTestElementAttribute(propertyToVerify);
-		if(Utility.matchContentsBasedOnStrategyDefinedForTestStep(expectedValueOfProperty, actualTestElementProperty)){
-			String errMessage = ERROR_MESSAGES.ER_IN_VERIFYING_TESTELEMENT_PROPERTY.getErrorMessage().replace("{EXPECTED}", expectedValueOfProperty);
-			errMessage = errMessage.replace("{ACTUAL}", actualTestElementProperty);
-			throw new Exception(errMessage);
+		} catch (NullPointerException ne) {
+			throw new Exception(ERROR_MESSAGES.ER_GET_TESTOBJECT.getErrorMessage());
+		} catch (Exception e) {
+			throw e;
 		}
-		
-		
 	}
 
 	@Override
-	public void verifyTestElementAttribute(String propertyToVerify,
-			String expectedValueOfProperty) throws Exception {
+	public void verifyTestElementAttributeNotPresent(String propertyToVerify, String expectedValueOfProperty)
+			throws Exception {
 		String actualTestElementProperty = this.getTestElementAttribute(propertyToVerify);
-		if(!Utility.matchContentsBasedOnStrategyDefinedForTestStep(expectedValueOfProperty, actualTestElementProperty)){
-			String errMessage = ERROR_MESSAGES.ER_IN_VERIFYING_TESTELEMENT_PROPERTY.getErrorMessage().replace("{EXPECTED}", expectedValueOfProperty);
+		if (Utility.matchContentsBasedOnStrategyDefinedForTestStep(expectedValueOfProperty,
+				actualTestElementProperty)) {
+			String errMessage = ERROR_MESSAGES.ER_IN_VERIFYING_TESTELEMENT_PROPERTY.getErrorMessage()
+					.replace("{EXPECTED}", expectedValueOfProperty);
 			errMessage = errMessage.replace("{ACTUAL}", actualTestElementProperty);
 			throw new Exception(errMessage);
 		}
-		
+
+	}
+
+	@Override
+	public void verifyTestElementAttribute(String propertyToVerify, String expectedValueOfProperty) throws Exception {
+		String actualTestElementProperty = this.getTestElementAttribute(propertyToVerify);
+		if (!Utility.matchContentsBasedOnStrategyDefinedForTestStep(expectedValueOfProperty,
+				actualTestElementProperty)) {
+			String errMessage = ERROR_MESSAGES.ER_IN_VERIFYING_TESTELEMENT_PROPERTY.getErrorMessage()
+					.replace("{EXPECTED}", expectedValueOfProperty);
+			errMessage = errMessage.replace("{ACTUAL}", actualTestElementProperty);
+			throw new Exception(errMessage);
+		}
+
 	}
 
 	@Override
 	public void hover() throws Exception {
-		try{
-			
+		try {
+
 			WebElement testElement = this.waitAndGetTestObject(true);
-			
+
 			Actions builder = new Actions(driver);
-			
+
 			builder.moveToElement(testElement);
-			
+
 			builder.build().perform();
-						
-		}
-		catch(Exception e){
+
+		} catch (Exception e) {
 			throw new Exception(ERROR_MESSAGES.ER_HOVER_TO_ELEMENT.getErrorMessage() + " -- " + e.getMessage());
 		}
-		
+
 	}
 
 	@Override
 	public void sleep(long timeInMilliseconds) {
-		try{
+		try {
 			Thread.sleep(timeInMilliseconds);
-			}
-			catch(Exception e){
-				// nothing to throw.
-			}
-		
+		} catch (Exception e) {
+			// nothing to throw.
+		}
+
 	}
-	
-    private File getScreenshot() throws Exception{
-    	File srcFile;
-    	try {
-    		srcFile = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-    		srcFile=Utility.reduceScreenShotSize(srcFile,rManager.getTestExecutionLogFileLocation().replace("{0}", "tempFile.png"));
+
+	private File getScreenshot() throws Exception {
+		File srcFile;
+		try {
+			srcFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+			srcFile = Utility.reduceScreenShotSize(srcFile,
+					rManager.getTestExecutionLogFileLocation().replace("{0}", "tempFile.png"));
 		} catch (Exception e) {
 			throw e;
 		}
 		return srcFile;
 	}
 
-@Override
-public String saveSnapshotAndHighlightTarget(boolean highlight) {
-	/*
-	 * For Debug Mode  OFF : take screenshots for FAILED test steps only
-	 * FOr Debug MOde ON : take screenshots for ALL the test step irrespective of its status.
-	 * For DebugMode  Strict Off : don't take screenshot at all. 
-	 */
-	File fileContainingSnapshot = null;
-	File destinationFileThatWillContainSnapshot =  null;
-	String screeShotFileName = "";
-	try{			
-		if(highlight){
-			try{
-				JavascriptExecutor js = (JavascriptExecutor) driver;
-				js.executeScript("arguments[0].style.border='4px groove Red'", actualTestElement);
-				fileContainingSnapshot = this.getScreenshot();
-				js.executeScript("arguments[0].style.border=''", actualTestElement);
-			}
-			catch(Exception e){ //nothing to do.
+	@Override
+	public String saveSnapshotAndHighlightTarget(boolean highlight) {
+		/*
+		 * For Debug Mode OFF : take screenshots for FAILED test steps only FOr
+		 * Debug Mode ON : take screenshots for ALL the test step irrespective
+		 * of its status. For DebugMode Strict Off : don't take screenshot at
+		 * all.
+		 */
+		File fileContainingSnapshot = null;
+		File destinationFileThatWillContainSnapshot = null;
+		String screenShotFileName = "";
+		try {
+			if (highlight) {
+				try {
+					JavascriptExecutor js = (JavascriptExecutor) driver;
+					js.executeScript("arguments[0].style.border='4px groove Red'", actualTestElement);
+					fileContainingSnapshot = this.getScreenshot();
+					js.executeScript("arguments[0].style.border=''", actualTestElement);
+				} catch (Exception e) { // nothing to do.
 				}
-			}				
-		else{
-		fileContainingSnapshot = this.getScreenshot();}				
-		
-		if(fileContainingSnapshot != null){
-		
-			String modifiedStepExecutionTimeString = Property.StepExecutionTime.replace("/", "");
-			modifiedStepExecutionTimeString = modifiedStepExecutionTimeString.replace(":", "");
-			modifiedStepExecutionTimeString = modifiedStepExecutionTimeString.replace(" ", "");
-			destinationFileThatWillContainSnapshot = new File(rManager.getTestExecutionLogFileLocation().replace("{0}", Property.CURRENT_TEST_GROUP + "_" + Property.CURRENT_TESTSUITE + "_" + Property.CURRENT_TESTCASE + "_" + Property.CURRENT_TESTSTEP + "_" + Property.StepStatus + modifiedStepExecutionTimeString + ".jpg"));
-			FileUtils.copyFile(fileContainingSnapshot,destinationFileThatWillContainSnapshot);
-			screeShotFileName = destinationFileThatWillContainSnapshot.getName();
+			} else {
+				fileContainingSnapshot = this.getScreenshot();
+			}
+
+			if (fileContainingSnapshot != null) {
+
+				String modifiedStepExecutionTimeString = Property.StepExecutionTime.replace("/", "");
+				modifiedStepExecutionTimeString = modifiedStepExecutionTimeString.replace(":", "");
+				modifiedStepExecutionTimeString = modifiedStepExecutionTimeString.replace(" ", "");
+				destinationFileThatWillContainSnapshot = new File(
+						rManager.getTestExecutionLogFileLocation().replace("{0}",
+								Property.CURRENT_TEST_GROUP + "_" + Property.CURRENT_TESTSUITE + "_"
+										+ Property.CURRENT_TESTCASE + "_" + Property.CURRENT_TESTSTEP + "_"
+										+ Property.StepStatus + modifiedStepExecutionTimeString + ".jpg"));
+				FileUtils.copyFile(fileContainingSnapshot, destinationFileThatWillContainSnapshot);
+				screenShotFileName = destinationFileThatWillContainSnapshot.getName();
+			}
+		} catch (Exception e) {
+			// Nothing to do here.
 		}
+		return screenShotFileName;
 	}
-	catch(Exception e){
-		//Nothing to do here.
-	}
-	return screeShotFileName;
-}
 
 	@Override
 	public void waitUntilObjectIsThere() throws Exception {
-		
+
 		wait.until(new ExpectedCondition<Boolean>() {
 			public Boolean apply(WebDriver d) {
-				boolean isObjectNotPresent = true;		
+				boolean isObjectNotPresent = true;
 				try {
-						actualTestElement =  getActualTestObject();
-						if(actualTestElement != null){ isObjectNotPresent = false;}
-						else{isObjectNotPresent =  true ;}
-						return isObjectNotPresent;
-					} catch (Exception e) {					
+					actualTestElement = getActualTestObject();
+					if (actualTestElement != null) {
+						isObjectNotPresent = false;
+					} else {
+						isObjectNotPresent = true;
 					}
+					return isObjectNotPresent;
+				} catch (Exception e) {
+				}
 				return isObjectNotPresent;
 			}
-	});
-		
-		
+		});
+
 	}
 
 	@Override
 	public String getTestObjectCount() throws Exception {
 		int testObjectCount = 0;
-		
+
 		try {
 			this.getTestObjectList = true;
 			this.waitAndGetTestObject(true);
@@ -796,25 +809,25 @@ public String saveSnapshotAndHighlightTarget(boolean highlight) {
 		} catch (Exception e) {
 			testObjectCount = 0;
 		}
-		
+
 		return String.valueOf(testObjectCount);
 	}
 
 	@Override
 	public void refresh() throws Exception {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
-	public void verifyPageAttribute(String property, String value)
-			throws Exception {
+	public void verifyPageAttribute(String property, String value) throws Exception {
 		String propertyValue = "";
 		try {
 			propertyValue = this.getPageAttribute(property);
 			boolean isVerified = Utility.matchContentsBasedOnStrategyDefinedForTestStep(value, propertyValue);
-			if(!isVerified){
-				String errMessage = ERROR_MESSAGES.ERR_VERIFYING_PAGE_PROPERTY.getErrorMessage().replace("{PAGE_ATTRIBUTE}", property);
+			if (!isVerified) {
+				String errMessage = ERROR_MESSAGES.ERR_VERIFYING_PAGE_PROPERTY.getErrorMessage()
+						.replace("{PAGE_ATTRIBUTE}", property);
 				errMessage = errMessage.replace("{ATTRIBUTE_VALUE}", propertyValue);
 				errMessage = errMessage.replace("{EXPECTED_ATTRIBUTE_VALUE}", value);
 				throw new Exception(errMessage);
@@ -822,14 +835,14 @@ public String saveSnapshotAndHighlightTarget(boolean highlight) {
 		} catch (Exception e) {
 			throw e;
 		}
-		
+
 	}
 
 	@Override
 	public String getPageProperties(String propertyName) throws Exception {
 		String actualProperty = "";
 		actualProperty = this.getPageAttribute(propertyName);
-		if(actualProperty == ""){
+		if (actualProperty == "") {
 			String errMessage = ERROR_MESSAGES.ER_SPECIFYING_INPUT.getErrorMessage().replace("{INPUT}", propertyName);
 			throw new Exception(errMessage);
 		}
@@ -839,89 +852,162 @@ public String saveSnapshotAndHighlightTarget(boolean highlight) {
 	@Override
 	public void verifySortByFeature(String sortType) throws Exception {
 		throw new Exception(ERROR_MESSAGES.FEATURE_NOT_IMPLEMENTED.getErrorMessage());
-		
+
 	}
-	
+
 	@Override
-	public void verifyAndReportRedirectdUrls() throws Exception{
+	public void verifyAndReportRedirectdUrls() throws Exception {
 		throw new Exception(ERROR_MESSAGES.FEATURE_NOT_IMPLEMENTED.getErrorMessage());
 	}
 
 	@Override
 	public void verifyAndReportBrokenLinksFromPages() throws Exception {
 		throw new Exception(ERROR_MESSAGES.FEATURE_NOT_IMPLEMENTED.getErrorMessage());
-		
+
 	}
 
 	@Override
-	public void browserNavigation(String navigationOption) throws Exception
-	{
+	public void browserNavigation(String navigationOption) throws Exception {
 		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public void verifyAndReportSCO(String scoUrlSource) throws Exception {
 		throw new Exception(ERROR_MESSAGES.FEATURE_NOT_IMPLEMENTED.getErrorMessage());
-		
+
 	}
 
 	@Override
-	public void handleAlert(String option) throws Exception
-	{
+	public void handleAlert(String option) throws Exception {
 		throw new Exception(ERROR_MESSAGES.FEATURE_NOT_IMPLEMENTED.getErrorMessage());
-	}	
+	}
 
-	public void uploadFile(String text)throws NoSuchElementException,Exception{
+	public void uploadFile(String text) throws NoSuchElementException, Exception {
 		throw new Exception(ERROR_MESSAGES.FEATURE_NOT_IMPLEMENTED.getErrorMessage());
 	}
 
 	@Override
-	public void verifyAndReportSectionLinks(String sectionName,String sectionValue)
-			throws Exception {
+	public void verifyAndReportSectionLinks(String sectionName, String sectionValue) throws Exception {
 		throw new Exception(ERROR_MESSAGES.FEATURE_NOT_IMPLEMENTED.getErrorMessage());
-		
-	}
-	
-	@Override
-	 	public String getElementDimension() throws NoSuchElementException, Exception {
-	 		WebElement testElement = null;
-	 		try{
-	 			testElement = this.waitAndGetTestObject(true);
-	 		}
-	 		catch(NoSuchElementException ne){
-	 			throw ne;
-	 		}
-	 		
-	 		try{
-	 			int width = testElement.getSize().getWidth();
-	 			int height = testElement.getSize().getHeight();
-	 			return width + "," + height;
-	 		}
-	 		catch(Exception e){
-	 			throw e;
-	 		}
-	 		
-	 	}
 
-	public void clickOnCo_ordinates(int i,int j) throws Exception{
+	}
+
+	@Override
+	public String getElementDimension() throws NoSuchElementException, Exception {
+		WebElement testElement = null;
+		try {
+			testElement = this.waitAndGetTestObject(true);
+		} catch (NoSuchElementException ne) {
+			throw ne;
+		}
+
+		try {
+			int width = testElement.getSize().getWidth();
+			int height = testElement.getSize().getHeight();
+			return width + "," + height;
+		} catch (Exception e) {
+			throw e;
+		}
+
+	}
+
+	public void clickOnCo_ordinates(int i, int j) throws Exception {
 		throw new Exception(ERROR_MESSAGES.FEATURE_NOT_IMPLEMENTED.getErrorMessage());
 	}
 
 	@Override
 	public void resizeCurrentWindow(int x_coord, int y_coord) throws Exception {
 		throw new Exception(ERROR_MESSAGES.FEATURE_NOT_IMPLEMENTED.getErrorMessage());
-		
+
 	}
 
 	@Override
 	public void resizeToDefault() throws Exception {
 		throw new Exception(ERROR_MESSAGES.FEATURE_NOT_IMPLEMENTED.getErrorMessage());
-		
+
 	}
 
 	@Override
 	public void navigateBack() throws Exception {
 		driver.sendKeyEvent(AndroidKeyCode.BACK);
+
+	}
+
+	@Override
+	public void verifyToastMessage() throws Exception {
+		// Expected and actual toast messages
+		String expectedToastMessage = testObjectInfo.getLocationOfTestObject();
+		BytePointer actualToastMessage;
 		
+		// Locations for original screenshot and cropped screenshot image files
+		String origImageLocation = rManager.getToastScreenshotImageFileLocation().replace("{PROJECT_NAME}",
+				Property.PROJECT_NAME);
+		String croppedImageLocation = (rManager.getObjectRepositoryFolderLocation() + "cropped.png")
+				.replace("{PROJECT_NAME}", Property.PROJECT_NAME);
+
+		File fileContainingSnapshot = null;
+		File destinationFile = null;
+
+		fileContainingSnapshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+
+		if (fileContainingSnapshot != null) {
+			destinationFile = new File(origImageLocation);
+			FileUtils.copyFile(fileContainingSnapshot, destinationFile);
+		} else {
+			System.err.println("snapshot file is empty");
+		}
+
+		TessBaseAPI api = new TessBaseAPI();
+		// Initialize tesseract-ocr with English, without specifying tessdata
+		// path
+		if (api.Init(null, "eng") != 0) {
+			System.err.println("Could not initialize tesseract.");
+			System.exit(1);
+		}
+
+		Image origImage = null;
+		try {
+			origImage = ImageIO.read(destinationFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		BufferedImage src = (BufferedImage) origImage;
+		BufferedImage cropped = src.getSubimage(100, 50 * src.getHeight() / 69, src.getWidth() - 200,
+				5 * src.getHeight() / 51);
+		BufferedImage copyOfImage = new BufferedImage(cropped.getWidth(), cropped.getHeight(),
+				BufferedImage.TYPE_INT_RGB);
+		Graphics g = copyOfImage.createGraphics();
+		g.drawImage(cropped, 0, 0, null);
+		File outputfile = new File(croppedImageLocation);
+		try {
+			ImageIO.write(copyOfImage, "png", outputfile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		// Open input image with leptonica library
+		PIX image = pixRead(croppedImageLocation);
+		api.SetImage(image);
+		// Get OCR result
+		actualToastMessage = api.GetUTF8Text();
+		// System.out.println("OCR output:\n" + actualToastMessage.getString());
+
+		// Destroy used object and release memory
+		api.End();
+		actualToastMessage.deallocate();
+		pixDestroy(image);
+
+		// Assert that obtained text from cropped image is same as expected
+		if (actualToastMessage.getString().contains(expectedToastMessage)) {
+			String errMessage = ERROR_MESSAGES.ER_IN_VERIFYING_TESTELEMENT_PROPERTY.getErrorMessage()
+					.replace("{EXPECTED}", expectedToastMessage);
+			errMessage = errMessage.replace("{ACTUAL}", actualToastMessage.getString());
+			throw new Exception(errMessage);
+		}
+		
+		// Finally delete the image files created in this method
+		Utility.deleteFile(origImageLocation);
+		Utility.deleteFile(croppedImageLocation);
+
 	}
 }

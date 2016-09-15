@@ -2,7 +2,7 @@ package com.auto.solution.Common;
 
 public class ResourceManager {
 	
-	private String FileSeperator = System.getProperty("file.separator");
+	private String fileSeparator = System.getProperty("file.separator");
 	
 	private String resourceBasePath = "";
 	
@@ -12,65 +12,75 @@ public class ResourceManager {
 	
 	public ResourceManager(String basePath){
 		this.projectBasePath = basePath;
-		this.resourceBasePath = basePath + FileSeperator + "src" + FileSeperator +"main"+ FileSeperator +"resources";
-		this.targetBasePath = basePath + FileSeperator + "target";
+		this.resourceBasePath = basePath + fileSeparator + "src" + fileSeparator +"main"+ fileSeparator +"resources";
+		this.targetBasePath = basePath + fileSeparator + "target";
 		
 	}
 	
 	public void setTargetBaseLocationRelativeToProjectBase(String targetLocation){
-		this.targetBasePath = this.projectBasePath + FileSeperator + targetLocation;
+		this.targetBasePath = this.projectBasePath + fileSeparator + targetLocation;
 	}
 	
 	public void setResourcesBaseLocationRelativeToProjectBase(String resourceLocation){
-		this.resourceBasePath = this.projectBasePath + FileSeperator + resourceLocation;
+		this.resourceBasePath = this.projectBasePath + fileSeparator + resourceLocation;
 	}
 	
-	public String getChromeDriverExecutibleLocation(){
-		String chromedriver_location = this.resourceBasePath + FileSeperator + Property.CHROME_EXECUTABLE;
+	public String getChromeDriverExecutableLocation(){
+		String chromedriver_location = this.resourceBasePath + fileSeparator + Property.CHROME_EXECUTABLE;
 		return chromedriver_location;
 	}
 	public String getTestExecutionLogFileLocation(){
-		String logFileLocation = (this.targetBasePath + FileSeperator + "Execution_Log" + FileSeperator + "{0}").replace(" ", "");
+		String logFileLocation = (this.targetBasePath + fileSeparator + "Execution_Log" + fileSeparator + "{0}").replace(" ", "");
 		return logFileLocation; 
 	}
 	
-	public String getUIAutoamtionPropertyFileLocation(){
-		String uiAutomationPropertyFileLocation = this.resourceBasePath + FileSeperator + Property.UIAutomationPropertyFileName;
+	public String getUIAutomationPropertyFileLocation(){
+		String uiAutomationPropertyFileLocation = this.resourceBasePath + fileSeparator + Property.UIAutomationPropertyFileName;
 		return uiAutomationPropertyFileLocation;
 	}
 	
 	public String getObjectRepositoryFileLocation(){
-		String location_OR = this.resourceBasePath + FileSeperator + "{PROJECT_NAME}" + FileSeperator + "ObjectRepository" + FileSeperator + Property.ObjectRepositoryFileName;
+		String location_OR = this.resourceBasePath + fileSeparator + "{PROJECT_NAME}" + fileSeparator + "ObjectRepository" + fileSeparator + Property.ObjectRepositoryFileName;
 		return location_OR;
 	}
 	
 	public String getLocationForExternalFilesInResources(){
-		String externalFileLocation = this.resourceBasePath + FileSeperator + "{PROJECT_NAME}"+ FileSeperator + "External_Files" + FileSeperator + "{EXTERNAL_FILE_NAME}";
+		String externalFileLocation = this.resourceBasePath + fileSeparator + "{PROJECT_NAME}"+ fileSeparator + "External_Files" + fileSeparator + "{EXTERNAL_FILE_NAME}";
 		return externalFileLocation;
 	}
 	
 	public String getMobileAPKFileLocation(){
-		String apk_file_location = this.resourceBasePath + FileSeperator + "{PROJECT_NAME}" + FileSeperator + "{APK_FILENAME}";
+		String apk_file_location = this.resourceBasePath + fileSeparator + "{PROJECT_NAME}" + fileSeparator + "{APK_FILENAME}";
 		return apk_file_location;
 	}
 	
 	public String getRecoveryFileLocation(){
-		String recovery_file_location = this.resourceBasePath + FileSeperator + "{PROJECT_NAME}"+ FileSeperator + "RecoveryFiles" + FileSeperator + Property.RECOVERY_FILENAME;
+		String recovery_file_location = this.resourceBasePath + fileSeparator + "{PROJECT_NAME}"+ fileSeparator + "RecoveryFiles" + fileSeparator + Property.RECOVERY_FILENAME;
 		return recovery_file_location;
 	}
 	
 	public String getTestSuiteLocationInFileSystem(){
-		String testsuite_location = this.resourceBasePath + FileSeperator + "{PROJECT_NAME}" + FileSeperator + "TestSuites" + FileSeperator;
+		String testsuite_location = this.resourceBasePath + fileSeparator + "{PROJECT_NAME}" + fileSeparator + "TestSuites" + fileSeparator;
 		return testsuite_location;
 	}
 	
 	public String getTestDriverLearningFileLocation(){
-		String learning_file_location = this.resourceBasePath + FileSeperator + Property.LEARNING_FILENAME;
+		String learning_file_location = this.resourceBasePath + fileSeparator + Property.LEARNING_FILENAME;
 		return learning_file_location;
 	}	
 	
 	public String getTestGroupPropertyFileLocationForFileSystem(){
-		String testGroup_file_location = this.resourceBasePath + FileSeperator + Property.TEST_GROUP_FILENAME;
+		String testGroup_file_location = this.resourceBasePath + fileSeparator + Property.TEST_GROUP_FILENAME;
 		return testGroup_file_location;
+	}
+	
+	public String getToastScreenshotImageFileLocation(){
+		String toast_screenshot_file_location = this.resourceBasePath + fileSeparator + "{PROJECT_NAME}" + fileSeparator + "ObjectRepository" + fileSeparator + Property.ToastScreenshotImageFileName;
+		return toast_screenshot_file_location;
+	}
+	
+	public String getObjectRepositoryFolderLocation(){
+		String location_OR_Folder = this.resourceBasePath + fileSeparator + "{PROJECT_NAME}" + fileSeparator + "ObjectRepository" + fileSeparator;
+		return location_OR_Folder;
 	}
 }

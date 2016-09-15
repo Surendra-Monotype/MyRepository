@@ -650,7 +650,7 @@ public class DesktopWebTestDriverImpl implements TestDrivers {
 							Arrays.asList("--start-maximized", "--ignore-certificate-errors"));
 					executionCapabilities.setCapability(ChromeOptions.CAPABILITY, options);
 					ChromeDriverService service = new ChromeDriverService.Builder().usingAnyFreePort()
-							.usingDriverExecutable(new File(rManager.getChromeDriverExecutibleLocation())).build();
+							.usingDriverExecutable(new File(rManager.getChromeDriverExecutableLocation())).build();
 					service.start();
 					driver = new ChromeDriver(service, executionCapabilities);
 				} else if (this.browserName.contains(Property.PHANTOM_KEYWORD)) {
@@ -1699,6 +1699,18 @@ public class DesktopWebTestDriverImpl implements TestDrivers {
 	public void navigateBack() throws Exception {
 		driver.navigate().back();
 
+	}
+
+	@Override
+	public void swipeOnElement() throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void verifyToastMessage() throws Exception {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

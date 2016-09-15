@@ -13,7 +13,7 @@ import com.auto.solution.Common.ResourceManager;
 import com.auto.solution.TestLearn.*;
 public class Compiler implements ICompiler{
 
-	private String testStepDefenition = "";
+	private String testStepDefinition = "";
 	private Pattern p = null;
 	private ResourceManager rManager;
 	public Compiler(ResourceManager rm){
@@ -60,7 +60,7 @@ public class Compiler implements ICompiler{
 		String conditionAttachedToTestStep = "";
 		try{
 			p = Pattern.compile("(?<=@C | @c)[^;]+");
-			Matcher m = p.matcher(testStepDefenition);
+			Matcher m = p.matcher(testStepDefinition);
 			if(m.find()){
 				conditionAttachedToTestStep = m.group();
 				conditionAttachedToTestStep = conditionAttachedToTestStep.trim();
@@ -76,7 +76,7 @@ public class Compiler implements ICompiler{
 		String stepAction = "";
 		try{
 		p = Pattern.compile("(?<=@A | @a)[^;]+");
-		Matcher m = p.matcher(testStepDefenition);
+		Matcher m = p.matcher(testStepDefinition);
 		if(m.find()){
 			stepAction = m.group();
 			
@@ -98,11 +98,11 @@ public class Compiler implements ICompiler{
 	}
 
 	@Override
-	public String getObjectDefenition() {
+	public String getObjectDefinition() {
 		String objDef = "";
 		try{
 			p = Pattern.compile("(?<=@O | @o)[^;]+");
-			Matcher m = p.matcher(testStepDefenition);
+			Matcher m = p.matcher(testStepDefinition);
 			if(m.find()){
 				objDef = m.group();
 				objDef = objDef.trim();
@@ -119,7 +119,7 @@ public class Compiler implements ICompiler{
 		String testData = "";
 		try{
 			p = Pattern.compile("(?<=@D | @d)[^;]+");
-			Matcher m = p.matcher(testStepDefenition);
+			Matcher m = p.matcher(testStepDefinition);
 			if(m.find()){
 				testData = m.group();
 				testData = testData.trim();
@@ -138,7 +138,7 @@ public class Compiler implements ICompiler{
 		try{
 			p = Pattern.compile("(?<=@S | @s)[^;]+");
 			
-			Matcher m = p.matcher(testStepDefenition);
+			Matcher m = p.matcher(testStepDefinition);
 			
 			if(m.find()){
 				
@@ -161,14 +161,14 @@ public class Compiler implements ICompiler{
 	}
 
 	@Override
-	public void setStepDefenitionToCompile(String testStepDefination) {
-		this.testStepDefenition = testStepDefination;
-		this.testStepDefenition = this.testStepDefenition.replace("&nbsp;", " ");
-		this.testStepDefenition = this.testStepDefenition.replace("&quot;", "\"");
+	public void setStepDefinitionToCompile(String testStepDefination) {
+		this.testStepDefinition = testStepDefination;
+		this.testStepDefinition = this.testStepDefinition.replace("&nbsp;", " ");
+		this.testStepDefinition = this.testStepDefinition.replace("&quot;", "\"");
 		//handling for single quote
-		this.testStepDefenition = this.testStepDefenition.replace("&#39;", "'");
-		this.testStepDefenition = this.testStepDefenition.replace("&gt;", ">");
-		this.testStepDefenition = this.testStepDefenition.replace("&lt;", "<");
+		this.testStepDefinition = this.testStepDefinition.replace("&#39;", "'");
+		this.testStepDefinition = this.testStepDefinition.replace("&gt;", ">");
+		this.testStepDefinition = this.testStepDefinition.replace("&lt;", "<");
 	}
 
 	@Override
@@ -176,11 +176,11 @@ public class Compiler implements ICompiler{
 	 * @author Nayan
 	 * @return : String in the form of "TestScenario:TestCaseID"
 	 **/
-	public String getSubTestCaseInvockedInTestStep() {
+	public String getSubTestCaseInvokedInTestStep() {
 		String internalTestCase = "";
 		try{
 			p = Pattern.compile("(?<=@R | @r)[^;]+");
-			Matcher m = p.matcher(testStepDefenition);
+			Matcher m = p.matcher(testStepDefinition);
 			if(m.find()){
 				internalTestCase = m.group();
 				internalTestCase = internalTestCase.trim();
@@ -197,7 +197,7 @@ public class Compiler implements ICompiler{
 		String iteration = "";
 		try{
 			p = Pattern.compile("(?<=@I | @i)[^;]+");
-			Matcher m = p.matcher(testStepDefenition);
+			Matcher m = p.matcher(testStepDefinition);
 			if(m.find()){
 				iteration = m.group();
 				iteration = iteration.trim();

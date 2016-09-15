@@ -15,6 +15,8 @@ public interface TestDrivers {
 	
 	public void hitTwice() throws Exception;
 	
+	public void verifyToastMessage() throws Exception;
+	
 	public void pressKeyboardKey(String Key) throws Exception;
 	
 	public void check() throws NoSuchElementException,Exception;
@@ -58,6 +60,8 @@ public interface TestDrivers {
 	public String saveSnapshotAndHighlightTarget(boolean highlight);
 	
 	public void swipetoElementVisible(String swipeType) throws Exception;
+	
+	public void swipeOnElement() throws Exception;
 	
 	public String getTestObjectCount() throws Exception;
 	

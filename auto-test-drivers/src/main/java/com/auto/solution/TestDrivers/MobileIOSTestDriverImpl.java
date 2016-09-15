@@ -933,5 +933,17 @@ public String saveSnapshotAndHighlightTarget(boolean highlight) {
 		driver.navigate().back();
 		
 	}
+
+	@Override
+	public void swipeOnElement() throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void verifyToastMessage() throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
 }
 

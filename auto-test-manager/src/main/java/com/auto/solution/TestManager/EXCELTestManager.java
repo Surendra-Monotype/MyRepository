@@ -174,7 +174,7 @@ public class EXCELTestManager implements ITestManager {
 	 }
 
 @Override
-public HashMap<String, String> getActualObjectDefination(	String logicalNameOfTheObject) throws Exception {
+public HashMap<String, String> getActualObjectDefinition(	String logicalNameOfTheObject) throws Exception {
 	
 	HashMap<String,String> objDef = new HashMap<String, String>();
 	try{

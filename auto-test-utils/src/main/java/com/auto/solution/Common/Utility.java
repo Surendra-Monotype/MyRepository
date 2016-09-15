@@ -43,7 +43,7 @@ public class Utility {
 	
 	public void loadPropertiesDefinedForExecution() throws Exception {
 		try {
-			testDrivingPropertyFile.load(new FileInputStream(rManager.getUIAutoamtionPropertyFileLocation()));
+			testDrivingPropertyFile.load(new FileInputStream(rManager.getUIAutomationPropertyFileLocation()));
 
 		} catch (Exception e) {
 			throw e;
@@ -75,17 +75,17 @@ public class Utility {
 	public static void showAllTestEnginePropertiesOnConsole() 
 	{
 		try{
-			String[] relevantProprties = null;
+			String[] relevantProperties = null;
 			
 			String valueForKey = System.getProperties().getProperty("sun.java.command");
 			if (valueForKey.toLowerCase().contains("-d")) {
-				relevantProprties = valueForKey.split("-d");
+				relevantProperties = valueForKey.split("-d");
 			}
 			
-			if(relevantProprties!=null){
-				for(int i=1;i<relevantProprties.length;i++){
-					String key =relevantProprties[i].split("=")[0];
-					String value = relevantProprties[i].split("=")[1];
+			if(relevantProperties!=null){
+				for(int i=1;i<relevantProperties.length;i++){
+					String key =relevantProperties[i].split("=")[0];
+					String value = relevantProperties[i].split("=")[1];
 					tempMap.put(key, value);
 				}
 			}

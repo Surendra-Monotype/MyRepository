@@ -5,17 +5,17 @@ import java.util.ArrayList;
 
 public interface ICompiler {
 
-	public void setStepDefenitionToCompile(String stepDefenition);
+	public void setStepDefinitionToCompile(String stepDefinition);
 	
 	public String getStepAction() throws FileNotFoundException;
 	
-	public String getObjectDefenition();
+	public String getObjectDefinition();
 	
 	public String getTestData();
 	
 	public String getStrategyApplied();
 	
-	public String getSubTestCaseInvockedInTestStep();
+	public String getSubTestCaseInvokedInTestStep();
 	
 	public String getIterations();
 	
