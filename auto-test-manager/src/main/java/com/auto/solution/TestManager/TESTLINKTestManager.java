@@ -562,4 +562,10 @@ public class TESTLINKTestManager extends TestManagerUtils implements ITestManage
 	public List<String> getTestGroupsForExecution() throws Exception {				
 		return this.listOfTestGroupSelectedByUser;
 	}
+
+	@Override
+	public void setResultsInTestManager(HashMap<String, String> testCaseAndExecutionStatus) {
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -55,7 +55,7 @@ public class TestExecutionDetailsContainer implements ITestExecutionDetailsConta
 		this.mapOfTestGroupAndTheirTestCases = testGroupAndTestCaseDetails;
 	}
 	
-	public void prepareMapOfTestCasesAndTheirExecutionStatus(){
+	public HashMap<String,String> prepareMapOfTestCasesAndTheirExecutionStatus(){
 		if(!mapOfTestCasesAndTheirTestStepsWithDetails.isEmpty()){			
 			for (String testcase : mapOfTestCasesAndTheirTestStepsWithDetails.keySet()) {				
 				ArrayList<ArrayList<String>> testStepsWithDetails = mapOfTestCasesAndTheirTestStepsWithDetails.get(testcase);
@@ -71,6 +71,7 @@ public class TestExecutionDetailsContainer implements ITestExecutionDetailsConta
 				}
 			}
 		}
+		return mapOfTestCasesAndItsExecutionStatus;
 	}
 	
 	public void prepareMapOfTestSuitesAndTheirExecutionStatus(){

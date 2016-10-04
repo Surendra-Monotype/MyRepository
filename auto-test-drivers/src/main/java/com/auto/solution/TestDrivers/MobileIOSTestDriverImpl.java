@@ -945,5 +945,11 @@ public String saveSnapshotAndHighlightTarget(boolean highlight) {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void openApp() throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
 }
 

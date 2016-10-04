@@ -420,9 +420,12 @@ public class TestEngine {
 		
 		objTestExecutionDetails.getTestExecutionContainer().setMapOfTestCasesAndTheirTestStepsWithDetails(testCasesWithTestStepDetails);
 
-		objTestExecutionDetails.getTestExecutionContainer().prepareMapOfTestCasesAndTheirExecutionStatus();
+		HashMap<String, String> testCaseAndExecutionStatus = objTestExecutionDetails.getTestExecutionContainer().prepareMapOfTestCasesAndTheirExecutionStatus();
 		
 		objTestExecutionDetails.getTestExecutionContainer().prepareMapOfTestSuitesAndTheirExecutionStatus();
+		
+		// Automatically set execution results in Test Manager
+		testManager.setResultsInTestManager(testCaseAndExecutionStatus);
 		
 		}
 		catch(Exception e){

@@ -37,6 +37,8 @@ public interface ITestManager {
 	public HashMap<String, Set<String>> getTestSuiteAndTestCaseHierarchyForExecution() throws Exception;
 
 	public HashMap<String, HashMap<String, Set<String>>> prepareAndGetCompleteTestHierarchy() throws Exception;
+	
+	public void setResultsInTestManager(HashMap<String,String> testCaseAndExecutionStatus) throws Exception;
 
 }
 

@@ -15,6 +15,8 @@ public interface TestDrivers {
 	
 	public void hitTwice() throws Exception;
 	
+	public void openApp() throws Exception;
+	
 	public void verifyToastMessage() throws Exception;
 	
 	public void pressKeyboardKey(String Key) throws Exception;

@@ -16,8 +16,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import org.dbunit.dataset.DataSetException;
@@ -40,6 +42,7 @@ import com.rmn.testrail.service.TestRailService;
 
 import br.eti.kinoshita.testlinkjavaapi.util.TestLinkAPIException;
 
+@SuppressWarnings(value = "all")
 public class TESTRAILTestManager extends TestManagerUtils implements ITestManager {
 
 	private String objectRepository;
@@ -80,11 +83,12 @@ public class TESTRAILTestManager extends TestManagerUtils implements ITestManage
 				testRailAPIsClient.setUser(Property.TEST_MANAGEMENT_USERNAME);
 				testRailAPIsClient.setPassword(Property.TEST_MANAGEMENT_KEY);
 				try {
-					//List<Project> projects = testRailInstance.getProjects();
+					// List<Project> projects = testRailInstance.getProjects();
 					testProject = testRailInstance.getProjectByName(Property.PROJECT_NAME);
 					testProjectID = testProject.getId();
 				} catch (Exception e) {
-					//throw new Exception(Property.ERROR_MESSAGES.ER_IN_SPECIFYING_TEST_PROJECT.getErrorMessage());
+					// throw new
+					// Exception(Property.ERROR_MESSAGES.ER_IN_SPECIFYING_TEST_PROJECT.getErrorMessage());
 					System.out.println(e.getMessage());
 					System.out.println();
 				}
@@ -142,8 +146,8 @@ public class TESTRAILTestManager extends TestManagerUtils implements ITestManage
 
 		HashMap<String, List<String>> testDataCollection = new HashMap<String, List<String>>();
 
-//		ArrayList<Integer> testSuiteIds = new ArrayList<Integer>();
-//		int i = 0;
+		// ArrayList<Integer> testSuiteIds = new ArrayList<Integer>();
+		// int i = 0;
 
 		try {
 
@@ -283,7 +287,7 @@ public class TESTRAILTestManager extends TestManagerUtils implements ITestManage
 			int rowCount = objectRepoTable.getRowCount();
 
 			Integer iterativeRow = 0;
-			
+
 			if (logicalNameOfTheObject != "") {
 
 				while (iterativeRow < rowCount) {
@@ -329,9 +333,10 @@ public class TESTRAILTestManager extends TestManagerUtils implements ITestManage
 		ArrayList<String> testCaseSteps = new ArrayList<String>();
 
 		try {
-			
-			JSONArray testCasesArray = (JSONArray) JSONValue.parse(testRailAPIsClient.sendGet("get_cases/" + testProjectID).toString());
-			
+
+			JSONArray testCasesArray = (JSONArray) JSONValue
+					.parse(testRailAPIsClient.sendGet("get_cases/" + testProjectID).toString());
+
 			String testCase_id = "-1";
 
 			for (Object testCase : testCasesArray) {
@@ -488,6 +493,73 @@ public class TESTRAILTestManager extends TestManagerUtils implements ITestManage
 		} catch (Exception e) {
 			throw e;
 		}
+	}
+
+	@Override
+	public void setResultsInTestManager(HashMap<String, String> testCaseAndExecutionStatus) throws Exception {
+		System.out.println("Sending results to Test Rail . . . ");
+		JSONArray testCasesArray = (JSONArray) JSONValue
+				.parse(testRailAPIsClient.sendGet("get_cases/" + testProjectID).toString());
+		Iterator it = testCaseAndExecutionStatus.entrySet().iterator();
+		int case_id = 0;
+		JSONArray ja = new JSONArray();
+
+		while (it.hasNext()) {
+			JSONObject jo = new JSONObject();
+			HashMap.Entry pair = (HashMap.Entry) it.next();
+			String testCaseTitle = pair.getKey().toString();
+			String testCaseStatus = pair.getValue().toString();
+			int status_id = 0;
+			if (testCaseStatus.equalsIgnoreCase(Property.PASS)) {
+				status_id = 1;
+			} else {
+				status_id = 5;
+			}
+
+			for (Object testCase : testCasesArray) {
+				JSONObject testCaseObj = (JSONObject) testCase;
+				if (testCaseObj.get("title").equals(testCaseTitle)) {
+					case_id = Integer.parseInt(testCaseObj.get("id").toString());
+					break;
+				}
+			}
+			jo.put("case_id", case_id);
+			jo.put("status_id", status_id);
+			ja.add(jo);
+		}
+		JSONObject postRequestData = new JSONObject();
+		postRequestData.put("results", ja);
+
+		// Insert results in TestRail
+		testRailAPIsClient.sendPost("add_results_for_cases/" + getTestRunID(Property.TEST_EXECUTION_GROUP),
+				postRequestData);
+		System.out.println("Success --- Results sent to Test Rail !!! ");
+	}
+
+	public String getTestRunID(String testPlanName) throws Exception {
+		String testPlanID = "";
+		JSONArray testPlansArray = (JSONArray) JSONValue
+				.parse(testRailAPIsClient.sendGet("get_plans/" + testProjectID).toString());
+		for (Object testPlan : testPlansArray) {
+			JSONObject testPlanObj = (JSONObject) testPlan;
+			if (testPlanObj.get("name").toString().equalsIgnoreCase(testPlanName)) {
+				testPlanID = testPlanObj.get("id").toString();
+				break;
+			}
+		}
+
+		JSONObject testPlanDetailsObj = (JSONObject) JSONValue
+				.parse(testRailAPIsClient.sendGet("get_plan/" + testPlanID).toString());
+		JSONArray entriesArray = (JSONArray) testPlanDetailsObj.get("entries");
+		for (Object entry : entriesArray) {
+			JSONObject entryObj = (JSONObject) entry;
+			JSONArray runsArray = (JSONArray) entryObj.get("runs");
+			for (Object run : runsArray) {
+				JSONObject runObj = (JSONObject) run;
+				return runObj.get("id").toString();
+			}
+		}
+		return "";
 	}
 
 }

@@ -62,7 +62,7 @@ public class TestSimulator {
  	
  	private void prepareTestData(String testData){
  		this.testDataContents = null;
- 		this.testDataContents = testData.split(Property.TESTDATA_SEPERATOR);			
+ 		this.testDataContents = testData.split(Property.TESTDATA_SEPARATOR);			
  	}
  	
  	
@@ -510,8 +510,9 @@ public class TestSimulator {
  				testSimulator.navigateBack();
  			} else if(stepAction.toLowerCase().equalsIgnoreCase("verifytoastmessage")) {
  				testSimulator.verifyToastMessage();
- 			}
- 			
+ 			} else if(stepAction.toLowerCase().equalsIgnoreCase("openapp")) {
+ 				testSimulator.openApp();
+ 			} 			
  			else{
  				throw new NoSuchMethodException(Property.ERROR_MESSAGES.ER_NO_STEP_ACTION.getErrorMessage());
  			}

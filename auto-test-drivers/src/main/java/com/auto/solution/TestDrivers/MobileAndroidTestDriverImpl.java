@@ -1,5 +1,6 @@
 package com.auto.solution.TestDrivers;
 
+import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.AndroidKeyCode;
 
@@ -110,10 +111,6 @@ public class MobileAndroidTestDriverImpl implements TestDrivers {
 
 			Set<String> inputKeys = Property.globalVarMap.keySet();
 
-			// String apkFilePath =
-			// rManager.getMobileAPKFileLocation().replace("{PROJECT_NAME}",
-			// Property.PROJECT_NAME);
-
 			for (String capabilitykey : inputKeys) {
 				if (capabilitykey.contains(Property.DRIVER_CAPABILITY_KEYWORD)) {
 					String capabilityValue = Property.globalVarMap.get(capabilitykey);
@@ -123,14 +120,6 @@ public class MobileAndroidTestDriverImpl implements TestDrivers {
 					if (capabilityValue.toLowerCase().contains("null")) {
 						capabilityValue = "";
 					}
-
-					/*
-					 * if(actualCapabilityName.equalsIgnoreCase("app")){
-					 * if(!capabilityValue.trim().equals("")) capabilityValue =
-					 * Utility.getAbsolutePath(apkFilePath.replace(
-					 * "{APK_FILENAME}", capabilityValue)); }
-					 */
-
 					driverCapability.setCapability(actualCapabilityName, capabilityValue);
 				}
 			}
@@ -139,7 +128,7 @@ public class MobileAndroidTestDriverImpl implements TestDrivers {
 		}
 	}
 
-	private void captureAndriodExecutionDetails() {
+	private void captureAndroidExecutionDetails() {
 		if (Property.IsRemoteExecution.equalsIgnoreCase("true")) {
 			this.appiumUrlForExecution = Property.RemoteURL + "/wd/hub";
 		} else {
@@ -367,7 +356,7 @@ public class MobileAndroidTestDriverImpl implements TestDrivers {
 	public void initializeApp(String endpoint) throws MalformedURLException, Exception {
 		try {
 			this.loadAndSetDriverCapabilities();
-			this.captureAndriodExecutionDetails();
+			this.captureAndroidExecutionDetails();
 			driver = new AndroidDriver(new URL(this.appiumUrlForExecution), driverCapability);
 			wait = new WebDriverWait(driver, Long.parseLong(Property.SyncTimeOut));
 			recoverySupportHandle = new RecoverySupportForSeleniumDriver(driver, rManager);
@@ -912,7 +901,8 @@ public class MobileAndroidTestDriverImpl implements TestDrivers {
 	}
 
 	public void clickOnCo_ordinates(int i, int j) throws Exception {
-		throw new Exception(ERROR_MESSAGES.FEATURE_NOT_IMPLEMENTED.getErrorMessage());
+		TouchAction a2 = new TouchAction(driver);
+		a2.tap(i, j).perform();
 	}
 
 	@Override
@@ -1009,5 +999,10 @@ public class MobileAndroidTestDriverImpl implements TestDrivers {
 		Utility.deleteFile(origImageLocation);
 		Utility.deleteFile(croppedImageLocation);
 
+	}
+
+	@Override
+	public void openApp() throws Exception {
+		driver.startActivity(Property.APP_PACKAGE, Property.APP_ACTIVITY);
 	}
 }

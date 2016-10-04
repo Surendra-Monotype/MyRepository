@@ -364,7 +364,7 @@ public class Utility {
 			//String allCookies = Property.BROWSER_COOKIES;
 			String allCookies = (Utility.getValueForKeyFromGlobalVarMap("browser.cookie") == null ? "" : Utility.getValueForKeyFromGlobalVarMap("browser.cookie").trim());
 			
-			String[] cookiesString = allCookies.split(Property.COOKIE_SEPERATOR);
+			String[] cookiesString = allCookies.split(Property.COOKIE_SEPARATOR);
 			
 			for (int i = 0; i < cookiesString.length; i++) {
 				String[] cookieKeyValuePair = cookiesString[i].split("=");

@@ -179,11 +179,11 @@ public class Property {
 	
 	public static String ApplicationURL = "";
 	
-	public static String SEPERATOR = "#";
+	public static String SEPARATOR = "#";
 	
-	public static String TESTDATA_SEPERATOR = "#";
+	public static String TESTDATA_SEPARATOR = "#";
 	
-	public static String COOKIE_SEPERATOR = "###";
+	public static String COOKIE_SEPARATOR = "###";
 	
 	public static String BROWSER_COOKIES = "";
 	

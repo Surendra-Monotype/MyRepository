@@ -301,6 +301,12 @@ public HashMap<String, HashMap<String, Set<String>>> prepareAndGetCompleteTestHi
 	// TODO Auto-generated method stub
 	return null;
 }
+
+@Override
+public void setResultsInTestManager(HashMap<String, String> testCaseAndExecutionStatus) {
+	// TODO Auto-generated method stub
+	
+}
  
 
 

@@ -1713,4 +1713,10 @@ public class DesktopWebTestDriverImpl implements TestDrivers {
 		
 	}
 
+	@Override
+	public void openApp() throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
