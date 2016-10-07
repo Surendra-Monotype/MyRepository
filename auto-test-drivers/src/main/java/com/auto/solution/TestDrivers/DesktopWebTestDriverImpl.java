@@ -1719,4 +1719,10 @@ public class DesktopWebTestDriverImpl implements TestDrivers {
 		
 	}
 
+	@Override
+	public void tapOnElementWithOffset(int x, int y) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

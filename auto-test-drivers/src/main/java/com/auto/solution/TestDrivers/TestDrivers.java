@@ -19,6 +19,8 @@ public interface TestDrivers {
 	
 	public void verifyToastMessage() throws Exception;
 	
+	public void tapOnElementWithOffset(int x, int y) throws Exception;
+	
 	public void pressKeyboardKey(String Key) throws Exception;
 	
 	public void check() throws NoSuchElementException,Exception;

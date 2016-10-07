@@ -1443,4 +1443,10 @@ public String saveSnapshotAndHighlightTarget(boolean highlight) {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void tapOnElementWithOffset(int x, int y) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
 }

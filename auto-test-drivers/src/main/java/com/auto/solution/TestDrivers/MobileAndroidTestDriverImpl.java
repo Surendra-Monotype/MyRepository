@@ -3,6 +3,7 @@ package com.auto.solution.TestDrivers;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.AndroidKeyCode;
+import io.appium.java_client.android.AndroidKeyMetastate;
 
 import static org.bytedeco.javacpp.lept.pixDestroy;
 import static org.bytedeco.javacpp.lept.pixRead;
@@ -203,7 +204,7 @@ public class MobileAndroidTestDriverImpl implements TestDrivers {
 			throw new Exception(Property.ERROR_MESSAGES.ER_SPECIFYING_KEYBOARD_KEY.getErrorMessage());
 		}
 		try {
-			driver.sendKeyEvent(keyValue);
+			driver.getKeyboard().pressKey(Key);
 		} catch (Exception e) {
 			throw e;
 		}
@@ -919,8 +920,7 @@ public class MobileAndroidTestDriverImpl implements TestDrivers {
 
 	@Override
 	public void navigateBack() throws Exception {
-		driver.sendKeyEvent(AndroidKeyCode.BACK);
-
+		driver.navigate().back();
 	}
 
 	@Override
@@ -928,7 +928,7 @@ public class MobileAndroidTestDriverImpl implements TestDrivers {
 		// Expected and actual toast messages
 		String expectedToastMessage = testObjectInfo.getLocationOfTestObject();
 		BytePointer actualToastMessage;
-		
+
 		// Locations for original screenshot and cropped screenshot image files
 		String origImageLocation = rManager.getToastScreenshotImageFileLocation().replace("{PROJECT_NAME}",
 				Property.PROJECT_NAME);
@@ -994,15 +994,32 @@ public class MobileAndroidTestDriverImpl implements TestDrivers {
 			errMessage = errMessage.replace("{ACTUAL}", actualToastMessage.getString());
 			throw new Exception(errMessage);
 		}
-		
+
 		// Finally delete the image files created in this method
 		Utility.deleteFile(origImageLocation);
 		Utility.deleteFile(croppedImageLocation);
-
 	}
 
 	@Override
 	public void openApp() throws Exception {
 		driver.startActivity(Property.APP_PACKAGE, Property.APP_ACTIVITY);
+	}
+
+	@Override
+	public void tapOnElementWithOffset(int x, int y) throws Exception {
+		WebElement testElement = null;
+		try {
+			testElement = this.waitAndGetTestObject(true);
+			Point point = testElement.getLocation();
+			x+=point.getX();
+			y+=point.getY();
+		} catch (NoSuchElementException ne) {
+			throw ne;
+		}
+		try {
+			new TouchAction(driver).tap(x, y).release().perform();
+		} catch (Exception e) {
+			throw e;
+		}
 	}
 }

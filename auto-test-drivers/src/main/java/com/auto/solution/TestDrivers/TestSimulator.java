@@ -118,7 +118,7 @@ public class TestSimulator {
  			else if(stepAction.toLowerCase().equals("sendkey") ){
  				String textToType = "";
  				try{
- 					textToType = this.testDataContents[0];					      
+ 					textToType = this.testDataContents[0];				      
  				}
  			catch(ArrayIndexOutOfBoundsException ae){
  				throw new Exception(Property.ERROR_MESSAGES.ER_MISSING_TESTDATA.getErrorMessage());
@@ -512,7 +512,14 @@ public class TestSimulator {
  				testSimulator.verifyToastMessage();
  			} else if(stepAction.toLowerCase().equalsIgnoreCase("openapp")) {
  				testSimulator.openApp();
- 			} 			
+ 			} else if(stepAction.toLowerCase().equalsIgnoreCase("taponelementwithoffset")) {
+ 				if(testDataContents.length != 2){
+ 					throw new Exception(ERROR_MESSAGES.ER_SPECIFYING_TESTDATA.getErrorMessage());
+ 				}
+ 				int x_coordinates = Integer.parseInt(testDataContents[0]);
+ 				int y_coordinates = Integer.parseInt(testDataContents[1]);
+ 				testSimulator.tapOnElementWithOffset(x_coordinates, y_coordinates);
+ 			}
  			else{
  				throw new NoSuchMethodException(Property.ERROR_MESSAGES.ER_NO_STEP_ACTION.getErrorMessage());
  			}
